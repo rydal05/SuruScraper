@@ -6,21 +6,22 @@ with open('IN_STOCK.html','r') as html_file:
     #print(content)
 
     soup = BeautifulSoup(content, "lxml")
-    addToCartBtn = soup.find_all("button",id='add-cart-btn')
-    priceLabel = soup.find("input", class_="priceValue")
+    addToCartBtn = soup.find("button",id='add-cart-btn')
+    if addToCartBtn is not None:
+        price = soup.find("input", class_="priceValue")
+        JPY = int(price["value"])
+        priceVal = f"¥{JPY:,.2f}"
+        priceVal = priceVal.rstrip("0").rstrip(".")
+
 
     print(addToCartBtn)
-    if len(addToCartBtn) != 0:
+
+
+    if addToCartBtn is not None:
         print("PRODUCT AVAILABLE")
-        price = priceLabel.value.Text
-        print(price)
-    elif len(addToCartBtn) > 1:
-        print("POTENTIAL SITE CHANGE: Multiple add to cart buttons appear")
+        print(priceVal)
     else:
         print("PRODUCT UNAVAILABLE")
-
-
-
 
 #look for id "add-cart-btn"
 #general loop of the program
