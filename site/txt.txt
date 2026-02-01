@@ -1,0 +1,63 @@
+from flask import Flask, render_template, request, redirect
+from apscheduler.schedulers.background import BackgroundScheduler
+import sqlite3
+# ... your existing imports (BeautifulSoup, requests)
+
+app = Flask(__name__)
+
+def suru_scrape_task():
+    print("Running background scrape...")
+    # Put your scraping logic here
+    # 1. Fetch links from SQLite
+    # 2. Scrape Surugaya
+    # 3. If found, send email (Check out the 'smtplib' library for this)
+
+# --- Scheduler Setup ---
+scheduler = BackgroundScheduler()
+scheduler.add_job(func=suru_scrape_task, trigger="interval", hours=1)
+scheduler.start()
+
+# --- Web Routes ---
+@app.route('/')
+def index():
+    # Fetch items from DB to display in browser
+    conn = sqlite3.connect('suru.db')
+    items = conn.execute("SELECT * FROM wishlist").fetchall()
+    conn.close()
+    return render_template('index.html', items=items)
+
+@app.route('/add', methods=['POST'])
+def add_link():
+    url = request.form.get('url')
+    # Logic to insert URL into SQLite
+    return redirect('/')
+
+if __name__ == "__main__":
+    app.run(host='0.0.0.0', port=5000)
+
+-----------------------------------------------------
+3. How to run it on your NAS
+
+Most modern NAS units use Docker (often labeled "Container Manager" in Synology).
+
+    Create a Dockerfile: This is a simple text file in your project folder that tells the NAS how to run your Python code.
+    Dockerfile
+
+    FROM python:3.9-slim
+    WORKDIR /app
+    COPY . .
+    RUN pip install flask beautifulsoup4 requests lxml apscheduler
+    EXPOSE 5000
+    CMD ["python", "app.py"]
+
+    Upload to NAS: Put your folder containing the script, the Dockerfile, and the DB on your NAS.
+
+    Build and Run: Use the NAS terminal or GUI to launch the container. You will then be able to access the app by typing http://[NAS-IP-ADDRESS]:5000 into your browser.
+
+4. Helpful Tips for Surugaya
+
+    User-Agent: Surugaya (and many JP sites) may block default Python requests. Add a header to your requests.get() to look like a real browser: headers = {'User-Agent': 'Mozilla/5.0'}.
+
+    Emailing: Use Python's smtplib. If you have a Gmail account, you can use an "App Password" to let your script send notifications to yourself.
+
+    Database Management: Since you're scraping, consider adding a last_price and is_available column to your SQLite table so the web UI can show you the status at a glance without re-running the scrape.
