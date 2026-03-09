@@ -1,0 +1,14 @@
+# Note to self: pip install -r requirements.txt, and please be inside venv when you run this.
+APScheduler==3.11.2
+beautifulsoup4==4.14.3
+certifi==2026.2.25
+charset-normalizer==3.4.5
+dotenv==0.9.9
+idna==3.11
+lxml==6.0.2
+python-dotenv==1.2.2
+requests==2.32.5
+soupsieve==2.8.3
+typing_extensions==4.15.0
+tzlocal==5.3.1
+urllib3==2.6.3

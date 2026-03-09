@@ -41,6 +41,6 @@ def suru_scrape_task():
                     print(name + ": PRODUCT UNAVAILABLE")
 
                 conn.commit()
-                time.sleep(1.0)
+                time.sleep(3.0)
             except Exception as e:
                 print(f"Error scraping {url}:{e}")
