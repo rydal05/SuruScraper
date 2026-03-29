@@ -1,7 +1,7 @@
-from scrape import suru_scrape_task
-from database_handler import seed_db
+import scrape
+import database
 
 if __name__ == "__main__":
-    seed_db()
+    database.seed_db()
     
-    suru_scrape_task()
+    scrape.suru_scrape_task()

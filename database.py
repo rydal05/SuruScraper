@@ -46,3 +46,29 @@ def seed_db():
                 "INSERT OR IGNORE INTO wishlist (url, name, price) VALUES (?,?,?)", surugayaPages
             )
             conn.commit()
+
+            
+def insert_wishlist(link: str):
+    return
+
+def pop_wishlist():
+    return
+
+def get_all_items():
+    return
+
+def get_item_by_id(id: int):
+    return
+
+def add_item(url, name):
+    return
+
+def update_item():
+    return
+
+def delete_item(id: int):
+    return
+
+def set_item_status(id, in_stock, price,last_checked_at):
+    return
+
