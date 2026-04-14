@@ -1,32 +1,29 @@
 import sqlite3
+from pathlib import Path
 
-surugayaPages = [
-	('https://www.suruga-ya.com/en/product/ZHORE50831', 'BLANK', 0),
-	('https://www.suruga-ya.com/en/product/ZHORE138875', 'BLANK', 0),
-	('https://www.suruga-ya.com/en/product/ZHORE70652', 'BLANK', 0),
-	('https://www.suruga-ya.com/en/product/ZHORE29719', 'BLANK', 0),
-	('https://www.suruga-ya.com/en/product/ZHORE79987', 'BLANK', 0),
-	('https://www.suruga-ya.com/en/product/ZHORE79987', 'BLANK', 0),
-	('https://www.suruga-ya.com/en/product/ZHORE80042', 'BLANK', 0),
-	('https://www.suruga-ya.com/en/product/ZHORE229720', 'BLANK', 0),
-	('https://www.suruga-ya.com/en/product/ZHORE138862', 'BLANK', 0),
-	('https://www.suruga-ya.com/en/product/ZHORE55361', 'BLANK', 0),
-	('https://www.suruga-ya.com/en/product/ZHORE9659', 'BLANK', 0),
-	('https://www.suruga-ya.com/en/product/186011708', 'BLANK', 0),
-	('https://www.suruga-ya.com/en/product/186023385', 'BLANK', 0),
-	('https://www.suruga-ya.com/en/product/186023384', 'BLANK', 0),
-	('https://www.suruga-ya.com/en/product/186147823', 'BLANK', 0),
-	('https://www.suruga-ya.com/en/product/186118307', 'BLANK', 0),
-	('https://www.suruga-ya.com/en/product/186114064', 'BLANK', 0),
-	('https://www.suruga-ya.com/en/product/186136845', 'BLANK', 0)
-]
-
+# specific to the things I want, older titles have these prefixes that I want
+# to remove for better readability
 prefixes = ["Doujin GAME CD Software", "General dojinshi for men Other games"]
 
 def get_prefixes():
     return prefixes
 
 def seed_db():
+    surugayaPages = []
+
+    if Path("suru.db").exists(): # return when we already have a db initialized
+        print("database exists")
+        return
+    if not Path("seed.txt").exists(): # return if a database seed doesn't exist
+        print("seed doesn't exist")
+        return
+
+    with open('seed.txt','r') as file:
+        for line in file:
+            line = line.strip("\n") # always remove \n from the file this just makes it easier for formatting on my end
+            surugayaPages.append((line,))
+            print(line)
+
     with sqlite3.connect('suru.db') as conn:
         cur = conn.cursor()
 
@@ -43,13 +40,21 @@ def seed_db():
         if cur.fetchone()[0] == 0:
             print("Empty database detected. Seeding...")
             cur.executemany(
-                "INSERT OR IGNORE INTO wishlist (url, name, price) VALUES (?,?,?)", surugayaPages
+                "INSERT OR IGNORE INTO wishlist (url, name, price) VALUES (?,'BLANK',0)", surugayaPages
             )
             conn.commit()
 
             
 def insert_wishlist(link: str):
-    return
+    with sqlite3.connect('suru.db') as conn:
+        cur = conn.cursor()
+
+        cur.execute(
+            "INSERT or IGNORE INTO wishlist (link, name, price) VALUES (?,'BLANK', 0)"
+        )
+
+
+    return True
 
 def pop_wishlist():
     return

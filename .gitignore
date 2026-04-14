@@ -1,2 +1,17 @@
 .env
 .venv
+tests.py
+.gitignore
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.db
+*.sqlite3
+*.log
+*.bak
+*.swp
+*.swo
+.vscode/
+suru.db
+seed.txt

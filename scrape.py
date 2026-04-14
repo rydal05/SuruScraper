@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 import requests
 import sqlite3
 
+
 from database import get_prefixes
 
 def suru_scrape_task():
