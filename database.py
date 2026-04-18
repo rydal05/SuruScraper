@@ -3,7 +3,13 @@ from pathlib import Path
 
 # specific to the things I want, older titles have these prefixes that I want
 # to remove for better readability
-prefixes = ["Doujin GAME CD Software", "General dojinshi for men Other games"]
+prefixes = [
+    "Doujin GAME CD Software",
+    "General dojinshi for men Other games",
+    "General dojinshi for men",
+    "Other Games",
+    "Dojin music CD-software"
+]
 
 def get_prefixes():
     return prefixes
@@ -14,8 +20,8 @@ def seed_db():
     if Path("suru.db").exists(): # return when we already have a db initialized
         print("database exists")
         return
-    if not Path("seed.txt").exists(): # return if a database seed doesn't exist
-        print("seed doesn't exist")
+    if not Path("seed.txt").exists(): # return if a database seed doesn't exist (seed files consist of line-break delimited item pages)
+        print("seed doesn't exist") 
         return
 
     with open('seed.txt','r') as file:
@@ -40,7 +46,9 @@ def seed_db():
         if cur.fetchone()[0] == 0:
             print("Empty database detected. Seeding...")
             cur.executemany(
-                "INSERT OR IGNORE INTO wishlist (url, name, price) VALUES (?,'BLANK',0)", surugayaPages
+                "INSERT OR IGNORE INTO wishlist (url, name, price) VALUES (?,'BLANK',0)", surugayaPages 
+                #TODO: add # of times sucessfully iterated over while in stock, general idea is that items have a maximum of 3 times you will be reminded that they're in stock before it stops sending out "IN STOCK" notifications  
+                #(still updates page/database information obviously)
             )
             conn.commit()
 
