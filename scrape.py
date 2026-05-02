@@ -8,7 +8,7 @@ import config as _G
 from database import get_prefixes
 from kdeNotify import send_notification # temporary kde 
 
-def suru_scrape_task(): # refactoring to be single use 
+def suru_scrape_task(): # refactoring to be single use
 	with sqlite3.connect('suru.db') as conn: # open database
 		cursor, items = getCursGetItems(conn)
 		for item_id, url, original_name in items: #for loop iterating over all items in db
@@ -17,7 +17,6 @@ def suru_scrape_task(): # refactoring to be single use
 				if not soup: continue
 				name = updateName(original_name, soup,cursor,item_id)
 				checkIfExists(soup, name) # first and foremost we do our check to see whether it's for sale or not
-
 				conn.commit()
 				time.sleep(_G.waitTime)
 			except Exception as e:
@@ -47,12 +46,12 @@ def checkIfExists(soup:BeautifulSoup,name:str): # currently only supports suruga
 	if addToCartBtn:
 		price_input = soup.find("input", class_="priceValue")
 		price_val = price_input["value"] if price_input else "Unknown"
-		send_notification("ITEM IN STOCK",name + " at " + price_val)
+		send_notification("ITEM IN STOCK",name + " at " + price_val) #TODO: Have price format thousands I.E 1,000,000
 		print(f"{name}: AVAILABLE @ ¥{price_val}") #TODO: add live USD conversion to spit out somewhere here
 	else:
 		print(name + ": PRODUCT UNAVAILABLE")
 
-def scrapeResponse():#not even sure what im gonna use this for
+def scrapeResponse(): # not even sure what im gonna use this for
 	pass
 
 def getCursGetItems(conn: sqlite3.Connection):
