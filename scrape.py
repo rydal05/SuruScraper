@@ -6,8 +6,9 @@ import sqlite3
 import config as _G
 
 from database import get_prefixes
+from kdeNotify import send_notification # temporary kde 
 
-def suru_scrape_task():
+def suru_scrape_task(): # refactoring to be single use 
 	with sqlite3.connect('suru.db') as conn: # open database
 		cursor, items = getCursGetItems(conn)
 		for item_id, url, original_name in items: #for loop iterating over all items in db
@@ -21,7 +22,6 @@ def suru_scrape_task():
 				time.sleep(_G.waitTime)
 			except Exception as e:
 				print(f"Error scraping {url}:{e}")
-
 
 def updateName(original_name:str, soup:BeautifulSoup, cursor:sqlite3.Cursor, item_id):
 	name = original_name # Update outdated names
@@ -47,6 +47,7 @@ def checkIfExists(soup:BeautifulSoup,name:str): # currently only supports suruga
 	if addToCartBtn:
 		price_input = soup.find("input", class_="priceValue")
 		price_val = price_input["value"] if price_input else "Unknown"
+		send_notification("ITEM IN STOCK",name + " at " + price_val)
 		print(f"{name}: AVAILABLE @ ¥{price_val}") #TODO: add live USD conversion to spit out somewhere here
 	else:
 		print(name + ": PRODUCT UNAVAILABLE")

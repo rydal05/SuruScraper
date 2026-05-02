@@ -33,12 +33,15 @@ def seed_db():
     with sqlite3.connect('suru.db') as conn:
         cur = conn.cursor()
 
+        # table that contains item data pertinent to all wishlisted items
         cur.execute("""
             CREATE TABLE IF NOT EXISTS wishlist (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                     url TEXT UNIQUE,
                     name TEXT,
-                    price INTEGER        
+                    price INTEGER,
+                    lastSeenDate TEXT,
+                    lastSeenTime TEXT
             )
         """)
 
