@@ -6,7 +6,7 @@ import sqlite3
 import config as _G
 
 from database import get_prefixes
-from kdeNotify import send_notification # temporary kde 
+from notify import send_notification # temporary kde 
 
 def suru_scrape_task(): # refactoring to be single use
 	with sqlite3.connect('suru.db') as conn: # open database
