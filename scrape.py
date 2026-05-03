@@ -8,7 +8,12 @@ import config as _G
 from database import get_prefixes
 from notify import send_notification # temporary kde 
 
+from datetime import datetime 
+
 def suru_scrape_task(): # refactoring to be single use
+	formatted = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+	print(f"\nScrape job @ {formatted}")
+
 	with sqlite3.connect('suru.db') as conn: # open database
 		cursor, items = getCursGetItems(conn)
 		for item_id, url, original_name in items: #for loop iterating over all items in db
@@ -20,7 +25,7 @@ def suru_scrape_task(): # refactoring to be single use
 				conn.commit()
 				time.sleep(_G.waitTime)
 			except Exception as e:
-				print(f"Error scraping {url}:{e}")
+				print(f"	Error scraping {url}:{e}")
 
 def updateName(original_name:str, soup:BeautifulSoup, cursor:sqlite3.Cursor, item_id):
 	name = original_name # Update outdated names
@@ -47,9 +52,9 @@ def checkIfExists(soup:BeautifulSoup,name:str): # currently only supports suruga
 		price_input = soup.find("input", class_="priceValue")
 		price_val = price_input["value"] if price_input else "Unknown"
 		send_notification("ITEM IN STOCK",name + " at " + price_val) #TODO: Have price format thousands I.E 1,000,000
-		print(f"{name}: AVAILABLE @ ¥{price_val}") #TODO: add live USD conversion to spit out somewhere here
+		print(f"	{name}: AVAILABLE @ ¥{price_val}") #TODO: add live USD conversion to spit out somewhere here
 	else:
-		print(name + ": PRODUCT UNAVAILABLE")
+		print(f"	{name}: PRODUCT UNAVAILABLE")
 
 def scrapeResponse(): # not even sure what im gonna use this for
 	pass

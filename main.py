@@ -8,6 +8,4 @@ if __name__ == "__main__":
     print("Scrape precursor")
     scrape.suru_scrape_task() # initial pass in order to update DB for links passed
     # "game loop"
-    scheduler.scrapeScheduler(scrape.suru_scrape_task) # scheduled scrape that 
-
-    print("Hello")
+    scheduler.scrapeScheduler(scrape.suru_scrape_task) # scheduled scrape that runs on the hour XX:00
