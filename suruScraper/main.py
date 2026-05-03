@@ -1,6 +1,6 @@
-import scrape
-import database
-import scheduler
+import suruScraper.scrape as scrape
+import suruScraper.database as database
+import suruScraper.scheduler as scheduler
 
 if __name__ == "__main__":
     print("Database precursor")

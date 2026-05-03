@@ -1,9 +1,18 @@
+ seed.txt
+*.db
+
+.venv/
 .env
-.venv
-tests.py
-.gitignore
-/__pycache__/
-.vscode/
-suru.db
-seed.txt
-.db
+
+*.pyc
+__pycache__/
+
+instance/
+
+.pytest_cache/
+.coverage
+htmlcov/
+
+dist/
+build/
+*.egg-info/

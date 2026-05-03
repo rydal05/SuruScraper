@@ -87,4 +87,3 @@ def delete_item(id: int):
 
 def set_item_status(id, in_stock, price,last_checked_at):
     return
-
