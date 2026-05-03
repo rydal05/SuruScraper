@@ -3,6 +3,7 @@ from pathlib import Path
 
 # specific to the things I want, older titles have these prefixes that I want
 # to remove for better readability
+
 prefixes = [
     "Doujin GAME CD Software",
     "General dojinshi for men Other games",
