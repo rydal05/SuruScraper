@@ -1,5 +1,10 @@
 import sqlite3
-from pathlib import Path
+from datetime import datetime
+
+import click
+from flask import current_app, g
+
+from pathlib import Path 
 
 # specific to the things I want, older titles have these prefixes that I want
 # to remove for better readability
@@ -10,6 +15,23 @@ prefixes = [
     "Other Games",
     "Dojin music CD-software"
 ]
+
+def get_db():
+    if 'db' not in g:
+        g.db = sqlite3.connect(
+            current_app.config['DATABASE'],
+            detect_types=sqlite3.PARSE_DECLTYPES
+        )
+
+        g.db.row_factory = sqlite3.Row
+    
+    return g.db
+
+def close_db(e=None):
+    db = g.pop('db', None)
+
+    if db is not None:
+        db.close()
 
 def get_prefixes():
     return prefixes
