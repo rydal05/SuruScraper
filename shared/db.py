@@ -14,7 +14,7 @@ prefixes = [
     "General dojinshi for men",
     "Other Games",
     "Dojin music CD-software"
-]
+] #TODO: Ideally want some way to add on to this in the future when the webapp is up and running.
 
 def get_db():
     if 'db' not in g:

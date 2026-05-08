@@ -46,7 +46,7 @@ def checkIfExists(soup:BeautifulSoup,name:str): # currently only supports suruga
 	if addToCartBtn:
 		price_input = soup.find("input", class_="priceValue")
 		price_val = price_input["value"] if price_input else "Unknown"
-		#send_notification("ITEM IN STOCK",name + " at " + price_val) #TODO: Have price format thousands I.E 1,000,000
+		#send_notification("ITEM IN STOCK",name + " at " + price_val) #TODO: Have price format thousands I.E 1,000,000, also change this out for the email notifier whenever I do that 
 		print(f"{name}: AVAILABLE @ ¥{price_val}") #TODO: add live USD conversion to spit out somewhere here
 	else:
 		print(name + ": PRODUCT UNAVAILABLE")
