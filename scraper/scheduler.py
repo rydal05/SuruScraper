@@ -1,7 +1,7 @@
 from time import sleep
 from apscheduler.schedulers.background import BackgroundScheduler,BlockingScheduler
 
-import app.config as _G
+import scraper.config as _G
 
 def scrapeScheduler(func):
     scheduler = BlockingScheduler()

@@ -1,6 +1,6 @@
-import app.scrape as scrape
-import app.db as db
-import app.scheduler as scheduler
+import scraper.scrape as scrape
+import shared.db as db
+import scraper.scheduler as scheduler
 
 if __name__ == "__main__":
     print("Database precursor")

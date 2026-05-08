@@ -3,13 +3,13 @@ from bs4 import BeautifulSoup
 import requests
 import sqlite3
 
-import app.config as _G
+import scraper.config as _G
 
-from app.db import get_prefixes
-from app.notify import send_notification # temporary kde 
+from shared.db import get_prefixes
+#from notify import send_notification # temporary kde 
 
 def suru_scrape_task(): # refactoring to be single use
-	with sqlite3.connect('suru.db') as conn: # open database
+	with sqlite3.connect('data/database.db') as conn: # open database
 		cursor, items = getCursGetItems(conn)
 		for item_id, url, original_name in items: #for loop iterating over all items in db
 			try:
@@ -46,7 +46,7 @@ def checkIfExists(soup:BeautifulSoup,name:str): # currently only supports suruga
 	if addToCartBtn:
 		price_input = soup.find("input", class_="priceValue")
 		price_val = price_input["value"] if price_input else "Unknown"
-		send_notification("ITEM IN STOCK",name + " at " + price_val) #TODO: Have price format thousands I.E 1,000,000
+		#send_notification("ITEM IN STOCK",name + " at " + price_val) #TODO: Have price format thousands I.E 1,000,000
 		print(f"{name}: AVAILABLE @ ¥{price_val}") #TODO: add live USD conversion to spit out somewhere here
 	else:
 		print(name + ": PRODUCT UNAVAILABLE")

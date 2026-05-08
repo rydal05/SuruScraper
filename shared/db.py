@@ -39,20 +39,20 @@ def get_prefixes():
 def seed_db():
     surugayaPages = []
 
-    if Path("suru.db").exists(): # return when we already have a db initialized
+    if Path("data/database.db").exists(): # return when we already have a db initialized
         print("database exists")
         return
-    if not Path("seed.txt").exists(): # return if a database seed doesn't exist (seed files consist of line-break delimited item pages)
+    if not Path("data/seed.txt").exists(): # return if a database seed doesn't exist (seed files consist of line-break delimited item pages)
         print("seed doesn't exist") 
         return
 
-    with open('seed.txt','r') as file:
+    with open('data/seed.txt','r') as file:
         for line in file:
             line = line.strip("\n") # always remove \n from the file this just makes it easier for formatting on my end
             surugayaPages.append((line,))
             print(line)
 
-    with sqlite3.connect('suru.db') as conn:
+    with sqlite3.connect('data/database.db') as conn:
         cur = conn.cursor()
 
         # table that contains item data pertinent to all wishlisted items
@@ -79,7 +79,7 @@ def seed_db():
 
             
 def insert_wishlist(link: str):
-    with sqlite3.connect('suru.db') as conn:
+    with sqlite3.connect('data/database.db') as conn:
         cur = conn.cursor()
 
         cur.execute(
