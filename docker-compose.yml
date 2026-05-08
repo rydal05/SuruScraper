@@ -1,0 +1,13 @@
+services:
+  web-app:
+    build: .
+    ports:
+      - "80:5000" # server port always on 80 and app on 5000
+    volumes:
+      - ./data:/data # persistent DB
+    restart: always
+
+  
+  scraper: #sidecar architecture, 
+    build:
+    command: python 

@@ -3,10 +3,10 @@ from bs4 import BeautifulSoup
 import requests
 import sqlite3
 
-import suruScraper.config as _G
+import app.config as _G
 
-from suruScraper.database import get_prefixes
-from suruScraper.notify import send_notification # temporary kde 
+from app.db import get_prefixes
+from app.notify import send_notification # temporary kde 
 
 def suru_scrape_task(): # refactoring to be single use
 	with sqlite3.connect('suru.db') as conn: # open database
