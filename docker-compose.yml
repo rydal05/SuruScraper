@@ -6,8 +6,17 @@ services:
     volumes:
       - ./data:/data # persistent DB
     restart: always
+    command: python app.py
 
   
-  scraper: #sidecar architecture, 
-    build:
-    command: python 
+  scraper: 
+    build: .
+    environment:
+      - PYTHONUNBUFFERED=1
+      - TZ=America/New_York
+    volumes:
+      - ./data:/data
+    restart: always
+    command: python ./scraper/scrape.py
+    depends_on:
+      - web-app
