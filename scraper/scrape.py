@@ -14,7 +14,7 @@ db_path = BASE_DIR.parent/"data"/"database.db"
 seed_path = BASE_DIR.parent/"data"/"seed.txt"
 
 def suru_scrape_task(): # refactoring to be single use
-	with sqlite3.connect(db_path) as conn: # open database
+	with sqlite3.connect(db_path, timeout=10) as conn: # open database
 		cursor, items = getCursGetItems(conn)
 		for item_id, url, original_name in items: #for loop iterating over all items in db
 			try:

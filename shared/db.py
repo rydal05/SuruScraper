@@ -43,6 +43,11 @@ def get_prefixes():
 def seed_db():
     surugayaPages = []
 
+    conn = sqlite3.connect(db_path, timeout=10)
+    conn.execute('PRAGMA journal_mode=WAL;')
+    conn.execute('PRAGMA synchronous=NORMAL;')
+    conn.close()
+
     if Path(db_path).exists(): # return when we already have a db initialized
         print("database exists")
         return
@@ -56,7 +61,7 @@ def seed_db():
             surugayaPages.append((line,))
             print(line)
 
-    with sqlite3.connect(db_path) as conn:
+    with sqlite3.connect(db_path, timeout=10) as conn:
         cur = conn.cursor()
 
         # table that contains item data pertinent to all wishlisted items
@@ -83,7 +88,7 @@ def seed_db():
 
             
 def insert_wishlist(link: str):
-    with sqlite3.connect(db_path) as conn:
+    with sqlite3.connect(db_path, timeout=10) as conn:
         cur = conn.cursor()
 
         cur.execute(
