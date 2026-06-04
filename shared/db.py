@@ -43,14 +43,6 @@ def get_prefixes():
 def seed_db():
     surugayaPages = []
 
-    conn = sqlite3.connect(db_path, timeout=10)
-    conn.execute('PRAGMA journal_mode=WAL;')
-    conn.execute('PRAGMA synchronous=NORMAL;')
-    conn.close()
-
-    if Path(db_path).exists(): # return when we already have a db initialized
-        print("database exists")
-        return
     if not Path(seed_path).exists(): # return if a database seed doesn't exist (seed files consist of line-break delimited item pages)
         print("seed doesn't exist") 
         return
@@ -62,6 +54,9 @@ def seed_db():
             print(line)
 
     with sqlite3.connect(db_path, timeout=10) as conn:
+        conn.execute('PRAGMA journal_mode=WAL;')
+        conn.execute('PRAGMA synchronous=NORMAL;')
+
         cur = conn.cursor()
 
         # table that contains item data pertinent to all wishlisted items
@@ -72,7 +67,8 @@ def seed_db():
                     name TEXT,
                     price INTEGER,
                     lastSeenDate TEXT,
-                    lastSeenTime TEXT
+                    lastSeenTime TEXT,
+                    cleaned BOOLEAN CHECK (cleaned IN (0,1))
             )
         """)
 
@@ -80,7 +76,7 @@ def seed_db():
         if cur.fetchone()[0] == 0:
             print("Empty database detected. Seeding...")
             cur.executemany(
-                "INSERT OR IGNORE INTO wishlist (url, name, price) VALUES (?,'BLANK',0)", surugayaPages 
+                "INSERT OR IGNORE INTO wishlist (url, name, price, cleaned) VALUES (?,'BLANK',0,0)", surugayaPages 
                 #TODO: add # of times sucessfully iterated over while in stock, general idea is that items have a maximum of 3 times you will be reminded that they're in stock before it stops sending out "IN STOCK" notifications  
                 #(still updates page/database information obviously)
             )
@@ -92,8 +88,10 @@ def insert_wishlist(link: str):
         cur = conn.cursor()
 
         cur.execute(
-            "INSERT or IGNORE INTO wishlist (link, name, price) VALUES (?,'BLANK', 0)"
+            "INSERT or IGNORE INTO wishlist (url, name, price, cleaned) VALUES (?,'BLANK', 0, 0)",
+            (link,)
         )
+        conn.commit()
 
 
     return True
