@@ -1,21 +1,125 @@
-<!DOCTYPE html>
-<html>
+{% extends 'base.html' %}
 
-<head>
-    <title>SuruScraper</title>
-</head>
+{% block title %}Home{% endblock %}
 
-<body>
+{% block body_class %}dashboard-page{% endblock %}
 
-    <h1>Input Form</h1>
-    <form method="POST">
-        <label for="name">Name:</label>
-        <input type="text" id="name" name="name"><br><br>
-        <input type="submit" value="Submit">
+{% block content %}
+<section class="hero">
+	<div>
+		<p class="eyebrow">Dashboard</p>
+		<h2>Monitor the wishlist database and skim the latest scrape-ready state.</h2>
+		<p>This layout keeps the main lists inside their own scrollable panels, which matches the visual direction from your stylesheet while making the page feel like a real control surface.</p>
+	</div>
+	<div class="hero-actions">
+		<a class="button" href="{{ url_for('wishlist.create') }}">Add Item</a>
+		<form method="post" action="{{ url_for('wishlist.scrape_now') }}">
+			<button class="button button-secondary" type="submit">Scrape Now</button>
+		</form>
+		<a class="button button-secondary" href="{{ url_for('wishlist.settings') }}">Open Settings</a>
+	</div>
+</section>
 
-    </form> 
+<section class="dashboard-grid">
+	<article class="card data-card">
+		<header class="card-header">
+			<div>
+				<p class="eyebrow">Tracked items</p>
+				<h3>Wishlist table</h3>
+			</div>
+			<span class="stat-pill">{{ items|length }} items</span>
+		</header>
+		<div class="scroll-region">
+			<table class="wishlist-table">
+				<thead>
+					<tr>
+						<th>Name</th>
+						<th>URL</th>
+						<th>Price</th>
+						<th>Last seen</th>
+						<th>Status</th>
+						<th></th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for item in items %}
+					<tr>
+						<td>
+							<strong>{{ item['name'] }}</strong>
+						</td>
+						<td class="url-cell">
+							<a href="{{ item['url'] }}" target="_blank" rel="noreferrer">{{ item['url'] }}</a>
+						</td>
+						<td>
+							{% if item['price'] %}
+								¥{{ item['price'] }}
+							{% else %}
+								-
+							{% endif %}
+						</td>
+						<td>
+							{% if item['lastSeenDate'] or item['lastSeenTime'] %}
+								{{ item['lastSeenDate'] or 'Unknown' }} {{ item['lastSeenTime'] or '' }}
+							{% else %}
+								Not checked yet
+							{% endif %}
+						</td>
+						<td>
+							<span class="status-badge {% if item['cleaned'] %}status-muted{% else %}status-hot{% endif %}">
+								{% if item['cleaned'] %}Cleaned{% else %}Watching{% endif %}
+							</span>
+						</td>
+						<td class="action-cell">
+							<form method="post" action="{{ url_for('wishlist.delete', item_id=item['id']) }}">
+								<button class="icon-button" type="submit">Remove</button>
+							</form>
+						</td>
+					</tr>
+					{% else %}
+					<tr>
+						<td colspan="6" class="empty-state">No wishlist entries yet. Use Add Item to seed the tracker.</td>
+					</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+	</article>
 
+	<aside class="card feed-card">
+		<header class="card-header">
+			<div>
+				<p class="eyebrow">Timeline</p>
+				<h3>Scrape feed</h3>
+			</div>
+			<span class="stat-pill">Live view</span>
+		</header>
+		<div class="scroll-region feed-list">
+			{% for item in items %}
+			<article class="feed-item">
+				<div class="feed-thumb">{{ item['name'][:1] if item['name'] else '?' }}</div>
+				<div class="feed-copy">
+					<h4>{{ item['name'] }}</h4>
+					<p>{{ item['url'] }}</p>
+					<div class="feed-meta">
+						<span>{% if item['price'] %}¥{{ item['price'] }}{% else %}No price yet{% endif %}</span>
+						<span>{% if item['lastSeenDate'] %}{{ item['lastSeenDate'] }}{% endif %}{% if item['lastSeenTime'] %} {{ item['lastSeenTime'] }}{% endif %}</span>
+					</div>
+				</div>
+			</article>
+			{% else %}
+			<div class="empty-state">The feed will mirror scraped product activity once items start coming in.</div>
+			{% endfor %}
+		</div>
 
-</body>
-
-</html>
+		<div class="settings-summary" id="settings">
+			<p class="eyebrow">Session settings</p>
+			<ul>
+				<li>Notification target: {{ settings.notification }}</li>
+				<li>Scan interval: {{ settings.scan_interval }}</li>
+				<li>Scan time: {{ settings.scan_time }}</li>
+				<li>Theme: {{ settings.theme }}</li>
+			</ul>
+		</div>
+	</aside>
+</section>
+{% endblock %}

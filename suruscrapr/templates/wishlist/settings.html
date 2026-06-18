@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block title %}Settings{% endblock %}
+
+{% block content %}
+<section class="page-intro">
+  <div>
+    <p class="eyebrow">Settings</p>
+    <h2>Shape notifications, scan cadence, and theme.</h2>
+    <p>The selections here are stored in your session for now. That keeps the page useful immediately and leaves room for a persistent settings table later.</p>
+  </div>
+</section>
+
+<section class="card form-card wide-card">
+  <form method="post" class="settings-form">
+    <label for="notification">Notification target</label>
+    <select id="notification" name="notification">
+      <option value="web" {% if settings.notification == 'web' %}selected{% endif %}>Web page</option>
+      <option value="email" {% if settings.notification == 'email' %}selected{% endif %}>Email</option>
+      <option value="discord" {% if settings.notification == 'discord' %}selected{% endif %}>Discord</option>
+      <option value="logs" {% if settings.notification == 'logs' %}selected{% endif %}>Docker logs</option>
+    </select>
+
+    <label for="scan_interval">Scan interval</label>
+    <select id="scan_interval" name="scan_interval">
+      <option value="hourly" {% if settings.scan_interval == 'hourly' %}selected{% endif %}>Hourly</option>
+      <option value="every_30_minutes" {% if settings.scan_interval == 'every_30_minutes' %}selected{% endif %}>Every 30 minutes</option>
+      <option value="daily" {% if settings.scan_interval == 'daily' %}selected{% endif %}>Daily</option>
+    </select>
+
+    <label for="scan_time">Scan time</label>
+    <input id="scan_time" name="scan_time" value="{{ settings.scan_time }}" placeholder="XX:00">
+
+    <label for="theme">Theme</label>
+    <select id="theme" name="theme">
+      <option value="dark" {% if settings.theme == 'dark' %}selected{% endif %}>Dark</option>
+      <option value="light" {% if settings.theme == 'light' %}selected{% endif %}>Light</option>
+    </select>
+
+    <button type="submit" class="button">Save Settings</button>
+  </form>
+</section>
+
+<section class="card form-card wide-card" style="margin-top: 18px;">
+  <div class="settings-form">
+    <div>
+      <p class="eyebrow">Seed import</p>
+      <h3>Load wishlist links from data/seed.txt</h3>
+      <p>This uses the current seed file and inserts any new links into the shared wishlist table.</p>
+    </div>
+    <form method="post">
+      <input type="hidden" name="action" value="import_seed">
+      <button type="submit" class="button button-secondary">Import from Seed</button>
+    </form>
+  </div>
+</section>
+{% endblock %}

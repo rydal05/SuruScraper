@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block title %}Add Wishlist Item{% endblock %}
+
+{% block content %}
+<section class="page-intro">
+	<div>
+		<p class="eyebrow">Add item</p>
+		<h2>Track a product link before the scraper starts watching it.</h2>
+		<p>Paste the product page URL, give it a readable label, and the item will be stored in the shared wishlist database.</p>
+	</div>
+</section>
+
+<section class="card form-card wide-card">
+	<form method="post" class="stacked-form">
+		<label for="site">Site</label>
+		<select id="site" name="site">
+			<option>Surugaya</option>
+			<option>Mercari</option>
+			<option>Yahoo Auctions</option>
+			<option>Other</option>
+		</select>
+
+		<label for="url">Product URL</label>
+		<input name="url" id="url" placeholder="https://www.suruga-ya.jp/product/detail/..." required>
+
+		<label for="name">Display name</label>
+		<input name="name" id="name" placeholder="Optional shortcut name">
+
+		<button type="submit" class="button">Add to Wishlist</button>
+	</form>
+</section>
+{% endblock %}

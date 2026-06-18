@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %}First-Time Register{% endblock %}
+
+{% block content %}
+<section class="auth-panel">
+	<div class="panel-copy">
+		<p class="eyebrow">Setup</p>
+		<h2>Create the initial account for this dashboard.</h2>
+		<p>This page is only intended for the first launch. After one user exists, the app sends everyone else to the login screen.</p>
+	</div>
+	<form method="post" class="card form-card">
+		<label for="username">Username</label>
+		<input name="username" id="username" required autocomplete="username">
+
+		<label for="password">Password</label>
+		<input type="password" name="password" id="password" required autocomplete="new-password">
+
+		<button type="submit" class="button">Create Account</button>
+	</form>
+</section>
+{% endblock %}
