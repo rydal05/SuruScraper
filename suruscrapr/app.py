@@ -9,5 +9,4 @@ app = create_app()
 
 
 if __name__ == '__main__':
-    main.scheduledScrape()
     app.run(debug=True)

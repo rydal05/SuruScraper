@@ -37,7 +37,6 @@
 						<th>URL</th>
 						<th>Price</th>
 						<th>Last seen</th>
-						<th>Status</th>
 						<th></th>
 					</tr>
 				</thead>
@@ -54,20 +53,15 @@
 							{% if item['price'] %}
 								¥{{ item['price'] }}
 							{% else %}
-								-
+								N/A
 							{% endif %}
 						</td>
 						<td>
 							{% if item['lastSeenDate'] or item['lastSeenTime'] %}
 								{{ item['lastSeenDate'] or 'Unknown' }} {{ item['lastSeenTime'] or '' }}
 							{% else %}
-								Not checked yet
+								N/A
 							{% endif %}
-						</td>
-						<td>
-							<span class="status-badge {% if item['cleaned'] %}status-muted{% else %}status-hot{% endif %}">
-								{% if item['cleaned'] %}Cleaned{% else %}Watching{% endif %}
-							</span>
 						</td>
 						<td class="action-cell">
 							<form method="post" action="{{ url_for('wishlist.delete', item_id=item['id']) }}">
@@ -86,7 +80,7 @@
 	</article>
 
 	<aside class="card feed-card">
-		<!-- <header class="card-header">
+		<header class="card-header">
 			<div>
 				<p class="eyebrow">Timeline</p>
 				<h3>Scrape feed</h3>
@@ -109,7 +103,7 @@
 			{% else %}
 			<div class="empty-state">The feed will mirror scraped product activity once items start coming in.</div>
 			{% endfor %}
-		</div> -->
+		</div>
 
 		<div class="settings-summary" id="settings">
 			<p class="eyebrow">Session settings</p>

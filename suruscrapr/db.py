@@ -7,8 +7,18 @@ from flask import current_app, g
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent
-db_path = BASE_DIR.parent/"data"/"database.db"
 seed_path = BASE_DIR.parent/"data"/"seed.txt"
+
+prefixes = [
+    "Doujin GAME CD Software",
+    "General dojinshi for men Other games",
+    "General dojinshi for men",
+    "Other Games",
+    "Dojin music CD-software"
+]
+
+def get_prefixes():
+    return prefixes
 
 def get_db():
     if 'db' not in g:
@@ -176,35 +186,36 @@ def init_db():
             line = line.strip("\n") # always remove \n from the file this just makes it easier for formatting on my end
             surugayaPages.append((line,))
             print(line)
+    
+    
 
-    with sqlite3.connect(db_path, timeout=10) as conn:
-        conn.execute('PRAGMA journal_mode=WAL;')
-        conn.execute('PRAGMA synchronous=NORMAL;')
+    db.execute('PRAGMA journal_mode=WAL;')
+    db.execute('PRAGMA synchronous=NORMAL;')
 
-        cur = conn.cursor()
+    cur = db.cursor()
 
-        # table that contains item data pertinent to all wishlisted items
-        cur.execute("""
-            CREATE TABLE IF NOT EXISTS wishlist (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    url TEXT UNIQUE,
-                    name TEXT,
-                    price INTEGER,
-                    lastSeenDate TEXT,
-                    lastSeenTime TEXT,
-                    cleaned BOOLEAN CHECK (cleaned IN (0,1))
-            )
-        """)
+    # table that contains item data pertinent to all wishlisted items
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS wishlist (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+                url TEXT UNIQUE,
+                name TEXT,
+                price INTEGER,
+                lastSeenDate TEXT,
+                lastSeenTime TEXT,
+                cleaned BOOLEAN CHECK (cleaned IN (0,1))
+        )
+    """)
 
-        cur.execute("SELECT COUNT(*) FROM wishlist")
-        if cur.fetchone()[0] == 0:
-            print("Empty database detected. Seeding...")
-            cur.executemany(
-                "INSERT OR IGNORE INTO wishlist (url, name, price, cleaned) VALUES (?,'BLANK',0,0)", surugayaPages 
-                #TODO: add # of times sucessfully iterated over while in stock, general idea is that items have a maximum of 3 times you will be reminded that they're in stock before it stops sending out "IN STOCK" notifications  
-                #(still updates page/database information obviously)
-            )
-            conn.commit()
+    cur.execute("SELECT COUNT(*) FROM wishlist")
+    if cur.fetchone()[0] == 0:
+        print("Empty database detected. Seeding...")
+        cur.executemany(
+            "INSERT OR IGNORE INTO wishlist (url, name, price, cleaned) VALUES (?,'BLANK',0,0)", surugayaPages 
+            #TODO: add # of times sucessfully iterated over while in stock, general idea is that items have a maximum of 3 times you will be reminded that they're in stock before it stops sending out "IN STOCK" notifications  
+            #(still updates page/database information obviously)
+        )
+        db.commit()
 
 @click.command('init-db')
 def init_db_command():

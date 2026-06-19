@@ -11,7 +11,7 @@ DEFAULT_SETTINGS = {
     'notification': 'web',
     'scan_interval': 'hourly',
     'scan_time': 'XX:00',
-    'theme': 'dark',
+    'theme': 'light',
 }
 
 
@@ -56,7 +56,7 @@ def create():
 @login_required
 def scrape_now():
     try:
-        from scraper.scrape import suru_scrape_task
+        from suruscrapr.scrape import suru_scrape_task
 
         suru_scrape_task()
     except sqlite3.OperationalError:
@@ -77,7 +77,7 @@ def settings():
 
         if action == 'import_seed':
             try:
-                from shared.db import seed_db
+                from db import seed_db
 
                 seed_db()
             except sqlite3.OperationalError:
