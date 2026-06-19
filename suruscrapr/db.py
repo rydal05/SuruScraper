@@ -4,6 +4,12 @@ from datetime import datetime
 import click
 from flask import current_app, g
 
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parent
+db_path = BASE_DIR.parent/"data"/"database.db"
+seed_path = BASE_DIR.parent/"data"/"seed.txt"
+
 def get_db():
     if 'db' not in g:
         g.db = sqlite3.connect(
@@ -158,6 +164,47 @@ def init_db():
 
     with current_app.open_resource('schema.sql') as f:
         db.executescript(f.read().decode('utf8'))
+    
+    surugayaPages = []
+
+    if not Path(seed_path).exists(): # return if a database seed doesn't exist (seed files consist of line-break delimited item pages)
+        print("seed doesn't exist") 
+        return
+
+    with open(seed_path,'r') as file:
+        for line in file:
+            line = line.strip("\n") # always remove \n from the file this just makes it easier for formatting on my end
+            surugayaPages.append((line,))
+            print(line)
+
+    with sqlite3.connect(db_path, timeout=10) as conn:
+        conn.execute('PRAGMA journal_mode=WAL;')
+        conn.execute('PRAGMA synchronous=NORMAL;')
+
+        cur = conn.cursor()
+
+        # table that contains item data pertinent to all wishlisted items
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS wishlist (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    url TEXT UNIQUE,
+                    name TEXT,
+                    price INTEGER,
+                    lastSeenDate TEXT,
+                    lastSeenTime TEXT,
+                    cleaned BOOLEAN CHECK (cleaned IN (0,1))
+            )
+        """)
+
+        cur.execute("SELECT COUNT(*) FROM wishlist")
+        if cur.fetchone()[0] == 0:
+            print("Empty database detected. Seeding...")
+            cur.executemany(
+                "INSERT OR IGNORE INTO wishlist (url, name, price, cleaned) VALUES (?,'BLANK',0,0)", surugayaPages 
+                #TODO: add # of times sucessfully iterated over while in stock, general idea is that items have a maximum of 3 times you will be reminded that they're in stock before it stops sending out "IN STOCK" notifications  
+                #(still updates page/database information obviously)
+            )
+            conn.commit()
 
 @click.command('init-db')
 def init_db_command():

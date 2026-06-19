@@ -2,7 +2,7 @@ import scraper.scrape as scrape
 import shared.db as db
 import scraper.scheduler as scheduler
 
-if __name__ == "__main__":
+def scheduledScrape():
     print("Database precursor")
     db.seed_db() # seeds links to scrape from (utilizes a .txt file with links already \n delimited but might switch over to auth login on website and grabbing wishlists to do so)
     print("Scrape precursor")

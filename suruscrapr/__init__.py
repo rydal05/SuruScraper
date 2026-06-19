@@ -1,6 +1,7 @@
 from pathlib import Path
 
 from flask import Flask
+from scraper import main
 
 
 def create_app(test_config=None):
