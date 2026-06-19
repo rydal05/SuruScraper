@@ -1,12 +1,15 @@
+TODO:
+    Update website HTML elements
+    Stylize with proper CSS sheet
+    Proper config.ini
+    Proper dockerizeing
+    Update sign-in forms
+    Refactor and prettify (see scraper)
+    Readjust logic flow
+    
 
-does exist
-scraping works - procures necessary info 
-databasing works - init db from file - handle cases where does or doesnt exist
-scheduler - runs on hourly schedule at desired time with debouncing 
-
-does not exist
-web access - pages dont exist
-web database inferfaces - cant add or remove just by using web
-
-up next
-create simple webpage to display everything
+COMPLETE:
+    WEB SCRAPING
+    Saves to database
+    DB Schema
+    Basic frontend
