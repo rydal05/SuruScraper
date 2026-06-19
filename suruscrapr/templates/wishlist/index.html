@@ -7,9 +7,9 @@
 {% block content %}
 <section class="hero">
 	<div>
-		<p class="eyebrow">Dashboard</p>
-		<h2>Monitor the wishlist database and skim the latest scrape-ready state.</h2>
-		<p>This layout keeps the main lists inside their own scrollable panels, which matches the visual direction from your stylesheet while making the page feel like a real control surface.</p>
+		<p class="eyebrow">EYEBROW</p>
+		<h2>H2 FIELD</h2>
+		<p>PARAGRAPGH</p>
 	</div>
 	<div class="hero-actions">
 		<a class="button" href="{{ url_for('wishlist.create') }}">Add Item</a>
@@ -50,18 +50,10 @@
 							<a href="{{ item['url'] }}" target="_blank" rel="noreferrer">{{ item['url'] }}</a>
 						</td>
 						<td>
-							{% if item['price'] %}
-								¥{{ item['price'] }}
-							{% else %}
-								N/A
-							{% endif %}
+							{{ item['price'] }}
 						</td>
 						<td>
-							{% if item['lastSeenDate'] or item['lastSeenTime'] %}
-								{{ item['lastSeenDate'] or 'Unknown' }} {{ item['lastSeenTime'] or '' }}
-							{% else %}
-								N/A
-							{% endif %}
+							{{ item['lastSeenDateTime'] }}
 						</td>
 						<td class="action-cell">
 							<form method="post" action="{{ url_for('wishlist.delete', item_id=item['id']) }}">
@@ -80,7 +72,7 @@
 	</article>
 
 	<aside class="card feed-card">
-		<header class="card-header">
+		<!-- <header class="card-header">
 			<div>
 				<p class="eyebrow">Timeline</p>
 				<h3>Scrape feed</h3>
@@ -96,14 +88,14 @@
 					<p>{{ item['url'] }}</p>
 					<div class="feed-meta">
 						<span>{% if item['price'] %}¥{{ item['price'] }}{% else %}No price yet{% endif %}</span>
-						<span>{% if item['lastSeenDate'] %}{{ item['lastSeenDate'] }}{% endif %}{% if item['lastSeenTime'] %} {{ item['lastSeenTime'] }}{% endif %}</span>
+						<span>{% if item['lastSeenDateTime'] %}{{ item['lastSeenDateTime'] }}{% endif %}{% if item['lastSeenTime'] %} {{ item['lastSeenTime'] }}{% endif %}</span>
 					</div>
 				</div>
 			</article>
 			{% else %}
 			<div class="empty-state">The feed will mirror scraped product activity once items start coming in.</div>
 			{% endfor %}
-		</div>
+		</div> -->
 
 		<div class="settings-summary" id="settings">
 			<p class="eyebrow">Session settings</p>

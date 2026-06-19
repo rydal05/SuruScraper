@@ -57,7 +57,7 @@ def has_users():
 def get_all_items():
     try:
         return get_db().execute(
-            'SELECT id, url, name, price, lastSeenDate, lastSeenTime, cleaned '
+            'SELECT id, url, name, price, lastSeenDateTime, cleaned '
             'FROM wishlist ORDER BY id DESC'
         ).fetchall()
     except sqlite3.OperationalError:
@@ -66,7 +66,7 @@ def get_all_items():
 def get_item_by_id(item_id: int):
     try:
         return get_db().execute(
-            'SELECT id, url, name, price, lastSeenDate, lastSeenTime, cleaned '
+            'SELECT id, url, name, price, lastSeenDateTime, cleaned '
             'FROM wishlist WHERE id = ?',
             (item_id,),
         ).fetchone()
@@ -76,7 +76,7 @@ def get_item_by_id(item_id: int):
 def insert_wishlist(link: str):
     db = get_db()
     db.execute(
-        'INSERT OR IGNORE INTO wishlist (url, name, price, lastSeenDate, lastSeenTime, cleaned) '
+        'INSERT OR IGNORE INTO wishlist (url, name, price, lastSeenDateTime, cleaned) '
         "VALUES (?, 'BLANK', 0, NULL, NULL, 0)",
         (link,),
     )
@@ -89,7 +89,7 @@ def pop_wishlist():
 def add_item(url, name):
     db = get_db()
     db.execute(
-        'INSERT OR IGNORE INTO wishlist (url, name, price, lastSeenDate, lastSeenTime, cleaned) '
+        'INSERT OR IGNORE INTO wishlist (url, name, price, lastSeenDateTime, cleaned) '
         'VALUES (?, ?, 0, NULL, NULL, 0)',
         (url, name),
     )
@@ -106,7 +106,7 @@ def update_item(item_id: int, name=None, price=None, last_seen_date=None, last_s
         fields.append('price = ?')
         values.append(price)
     if last_seen_date is not None:
-        fields.append('lastSeenDate = ?')
+        fields.append('lastSeenDateTime = ?')
         values.append(last_seen_date)
     if last_seen_time is not None:
         fields.append('lastSeenTime = ?')
@@ -201,7 +201,7 @@ def init_db():
                 url TEXT UNIQUE,
                 name TEXT,
                 price INTEGER,
-                lastSeenDate TEXT,
+                lastSeenDateTime TEXT,
                 lastSeenTime TEXT,
                 cleaned BOOLEAN CHECK (cleaned IN (0,1))
         )

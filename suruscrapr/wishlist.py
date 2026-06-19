@@ -38,7 +38,7 @@ def create():
             try:
                 db = get_db()
                 db.execute(
-                    'INSERT OR IGNORE INTO wishlist (url, name, price, lastSeenDate, lastSeenTime, cleaned) '
+                    'INSERT OR IGNORE INTO wishlist (url, name, price, lastSeenDateTime, cleaned) '
                     'VALUES (?, ?, 0, NULL, NULL, 0)',
                     (url, display_name),
                 )

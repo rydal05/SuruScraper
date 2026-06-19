@@ -11,15 +11,13 @@
       <header class="topbar">
         <div>
           <p class="eyebrow">SuruScraper</p>
-          <h1 class="brand-title">Wishlist control panel</h1>
+          <h1 class="brand-title">H1 HEADER</h1>
         </div>
         <nav class="topnav">
           <a href="{{ url_for('wishlist.index') }}">Home</a>
           <a href="{{ url_for('wishlist.create') }}">Add</a>
           <a href="{{ url_for('wishlist.settings') }}">Settings</a>
           {% if g.user %}
-            <span class="nav-chip">{{ g.user['username'] }}</span>
-            <a href="{{ url_for('auth.logout') }}">Log Out</a>
           {% else %}
             <a href="{{ url_for('auth.register') }}">First-time Register</a>
             <a href="{{ url_for('auth.login') }}">Log In</a>
