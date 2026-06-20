@@ -11,5 +11,6 @@ dist/
 build/
 *.egg-info/
 .vscode/
-data/
-.gitignore 
+.gitignore
+data/actualSeed.txt
+data/database.db
