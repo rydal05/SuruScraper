@@ -20,6 +20,7 @@ prefixes = [
 def get_prefixes():
     return prefixes
 
+
 def get_db():
     if 'db' not in g:
         g.db = sqlite3.connect(
@@ -30,17 +31,20 @@ def get_db():
 
     return g.db
 
+
 def close_db(e=None):
     db = g.pop('db', None)
 
     if db is not None:
         db.close()
 
+
 def has_users():
     try:
         return get_db().execute('SELECT 1 FROM user LIMIT 1').fetchone() is not None
     except sqlite3.OperationalError:
         return False
+
 
 def get_all_items():
     try:
@@ -50,6 +54,7 @@ def get_all_items():
         ).fetchall()
     except sqlite3.OperationalError:
         return []
+
 
 def get_item_by_id(item_id: int):
     try:
@@ -61,6 +66,7 @@ def get_item_by_id(item_id: int):
     except sqlite3.OperationalError:
         return None
 
+
 def insert_wishlist(link: str):
     db = get_db()
     db.execute(
@@ -71,8 +77,10 @@ def insert_wishlist(link: str):
     db.commit()
     return True
 
+
 def pop_wishlist():
     return None
+
 
 def add_item(url, name):
     db = get_db()
@@ -82,6 +90,7 @@ def add_item(url, name):
         (url, name),
     )
     db.commit()
+
 
 def update_item(item_id: int, name=None, price=None, last_seen_date=None, last_seen_time=None, cleaned=None):
     fields = []
@@ -114,10 +123,12 @@ def update_item(item_id: int, name=None, price=None, last_seen_date=None, last_s
     )
     db.commit()
 
+
 def delete_item(item_id: int):
     db = get_db()
     db.execute('DELETE FROM wishlist WHERE id = ?', (item_id,))
     db.commit()
+
 
 def set_item_status(item_id, in_stock, price, last_checked_at):
     if last_checked_at is None:
@@ -132,9 +143,11 @@ def set_item_status(item_id, in_stock, price, last_checked_at):
         last_seen_time=last_checked_at.strftime('%H:%M'),
     )
 
+
 sqlite3.register_converter(
     'timestamp', lambda v: datetime.fromisoformat(v.decode())
 )
+
 
 def init_db():
     db = get_db()
@@ -184,15 +197,18 @@ def init_db():
         )
         db.commit()
 
+
 @click.command('init-db')
 def init_db_command():
     """Clear the existing data and create new tables."""
     init_db()
     click.echo('Initialized the database.')
 
+
 sqlite3.register_converter(
     "timestamp", lambda v: datetime.fromisoformat(v.decode())
 )
+
 
 def init_app(app):
     app.teardown_appcontext(close_db)

@@ -31,7 +31,6 @@ headers = {
 }
 
 
-
 def suru_scrape_task():
 	db = get_db()
 
@@ -50,8 +49,7 @@ def suru_scrape_task():
 			db.commit()
 		except Exception as e:
 			print(f"Error scraping {url}:{e}",flush=True)
-	
-	
+
 
 def updateName(original_name:str, soup:BeautifulSoup, db, item_id):
 	name = original_name
@@ -66,12 +64,14 @@ def updateName(original_name:str, soup:BeautifulSoup, db, item_id):
 
 	return name
 
+
 def getSoup(url:str):
 	response = requests.get(url, timeout=10, headers=headers)
 	if response.status_code != 200:
 		print(f"FAILED TO LOCATE SOUP: {response.status_code}") 
 		return None
 	return BeautifulSoup(response.content, "lxml")
+
 
 def checkIfExists(soup:BeautifulSoup,name:str,db,item_id):
 	addToCartBtn = soup.find("button",id='add-cart-btn') 
