@@ -13,6 +13,14 @@ from flask import current_app, g
 from suruscrapr.db import get_prefixes
 from suruscrapr.db import get_db, get_all_items
 
+import configparser
+config = configparser.ConfigParser()
+config.read('config.ini')
+
+c_wait = float(config['settings']['waitTime'])
+
+import os
+
 headers = {
     "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:152.0) Gecko/20100101 Firefox/152.0",
 	"Accept": "image/avif,image/webp,image/png,image/svg+xml,image/*;q=0.8,*/*;q=0.5",
@@ -22,13 +30,15 @@ headers = {
 	"Connection": "keep-alive",
 }
 
+
+
 def suru_scrape_task():
 	db = get_db()
 
 	print("Starting scrape task",flush=True)
 	items = db.execute("SELECT id, url, name FROM wishlist").fetchall()
 	for item_id, url, original_name in items:
-		time.sleep(3.0)
+		time.sleep(c_wait)
 		try:
 			print("Enumerating scrape task " + url,flush=True)
 			soup = getSoup(url)
