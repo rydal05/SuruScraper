@@ -3,8 +3,6 @@ try:
 except ImportError:
     from suruscrapr import create_app
 
-from scraper import main
-
 app = create_app()
 
 
