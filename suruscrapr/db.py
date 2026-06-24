@@ -157,13 +157,13 @@ def init_db():
     
     surugayaPages = []
 
-    if not Path(seed_path).exists(): # return if a database seed doesn't exist (seed files consist of line-break delimited item pages)
+    if not Path(seed_path).exists():
         print("seed doesn't exist") 
         return
 
     with open(seed_path,'r') as file:
         for line in file:
-            line = line.strip("\n") # always remove \n from the file this just makes it easier for formatting on my end
+            line = line.strip("\n")
             surugayaPages.append((line,))
             print(line)
     
@@ -174,7 +174,6 @@ def init_db():
 
     cur = db.cursor()
 
-    # table that contains item data pertinent to all wishlisted items
     cur.execute("""
         CREATE TABLE IF NOT EXISTS wishlist (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -192,8 +191,6 @@ def init_db():
         print("Empty database detected. Seeding...")
         cur.executemany(
             "INSERT OR IGNORE INTO wishlist (url, name, price, cleaned) VALUES (?,'BLANK',0,0)", surugayaPages 
-            #TODO: add # of times sucessfully iterated over while in stock, general idea is that items have a maximum of 3 times you will be reminded that they're in stock before it stops sending out "IN STOCK" notifications  
-            #(still updates page/database information obviously)
         )
         db.commit()
 
