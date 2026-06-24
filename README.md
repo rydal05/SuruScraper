@@ -1,4 +1,4 @@
-# SuruScraper: Autonomous Self-hosted Surugaya Wishlist Notifications
+# SuruScraper
 
 SuruScraper is a wishlist & databasing service for customers of Suruga-ya and Suruga-ya.jp. It allows for autonomous monitoring and reporting of stock status for items on the Suruga-ya platform. Some features of this software include: last time spotted in stock, last reported price, instantaneous notifications for PC and mobile, and more. 
 
