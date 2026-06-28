@@ -8,18 +8,24 @@
   </head>
   <body class="{% block body_class %}{% endblock %}">
     <div class="page-shell">
-      <header class="topbar">
-        <div>
-          <p class="eyebrow">SuruScraper</p>
-          <h1 class="brand-title">H1 HEADER</h1>
+      <header class="headerBar">
+      <div class="headerContainer">
+        <div class="hamburger"">
+          <p>hamburger here</p>
         </div>
-        <nav class="topnav">
+        <div class="logotext">
+          <p>SuruScraper</p>
+        </div>
+        <div class="notifbell">
+          <p>notif bell</p>
+        </div>
+        <nav class="navmenu">
           <a href="{{ url_for('wishlist.index') }}">Home</a>
           <a href="{{ url_for('wishlist.create') }}">Add</a>
           <a href="{{ url_for('wishlist.settings') }}">Settings</a>
           {% if g.user %}
           {% else %}
-            <a href="{{ url_for('auth.register') }}">First-time Register</a>
+            <a href="{{ url_for('auth.register') }}">Register</a>
             <a href="{{ url_for('auth.login') }}">Log In</a>
           {% endif %}
         </nav>
