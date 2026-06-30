@@ -5,31 +5,20 @@
 {% block body_class %}dashboard-page{% endblock %}
 
 {% block content %}
-<section class="hero">
+<section>
 	<div>
-		<p class="eyebrow">EYEBROW</p>
-		<h2>H2 FIELD</h2>
-		<p>PARAGRAPGH</p>
-	</div>
-	<div class="hero-actions">
-		<a class="button" href="{{ url_for('wishlist.create') }}">Add Item</a>
 		<form method="post" action="{{ url_for('wishlist.scrape_now') }}">
-			<button class="button button-secondary" type="submit">Scrape Now</button>
+			<button type="submit">Scrape Now</button>
 		</form>
-		<a class="button button-secondary" href="{{ url_for('wishlist.settings') }}">Open Settings</a>
 	</div>
 </section>
 
-<section class="dashboard-grid">
-	<article class="card data-card">
-		<header class="card-header">
-			<div>
-				<p class="eyebrow">Tracked items</p>
-				<h3>Wishlist table</h3>
-			</div>
-			<span class="stat-pill">{{ items|length }} items</span>
+<section>
+	<article>
+		<header>
+			<span> {{ items|length }} items</span>
 		</header>
-		<div class="scroll-region">
+		<div>
 			<table class="wishlist-table">
 				<thead>
 					<tr>
@@ -46,7 +35,7 @@
 						<td>
 							<strong>{{ item['name'] }}</strong>
 						</td>
-						<td class="url-cell">
+						<td>
 							<a href="{{ item['url'] }}" target="_blank" rel="noreferrer">{{ item['url'] }}</a>
 						</td>
 						<td>
@@ -55,57 +44,21 @@
 						<td>
 							{{ item['lastSeenDateTime'] }}
 						</td>
-						<td class="action-cell">
+						<td>
 							<form method="post" action="{{ url_for('wishlist.delete', item_id=item['id']) }}">
-								<button class="icon-button" type="submit">Remove</button>
+								<button type="submit">Remove</button>
 							</form>
 						</td>
 					</tr>
 					{% else %}
 					<tr>
-						<td colspan="6" class="empty-state">No wishlist entries yet. Use Add Item to seed the tracker.</td>
+						<td colspan="6">No wishlist entries yet. Use Add Item to seed the tracker.
+						</td>
 					</tr>
 					{% endfor %}
 				</tbody>
 			</table>
 		</div>
 	</article>
-
-	<aside class="card feed-card">
-		<!-- <header class="card-header">
-			<div>
-				<p class="eyebrow">Timeline</p>
-				<h3>Scrape feed</h3>
-			</div>
-			<span class="stat-pill">Live view</span>
-		</header>
-		<div class="scroll-region feed-list">
-			{% for item in items %}
-			<article class="feed-item">
-				<div class="feed-thumb">{{ item['name'][:1] if item['name'] else '?' }}</div>
-				<div class="feed-copy">
-					<h4>{{ item['name'] }}</h4>
-					<p>{{ item['url'] }}</p>
-					<div class="feed-meta">
-						<span>{% if item['price'] %}¥{{ item['price'] }}{% else %}No price yet{% endif %}</span>
-						<span>{% if item['lastSeenDateTime'] %}{{ item['lastSeenDateTime'] }}{% endif %}{% if item['lastSeenTime'] %} {{ item['lastSeenTime'] }}{% endif %}</span>
-					</div>
-				</div>
-			</article>
-			{% else %}
-			<div class="empty-state">The feed will mirror scraped product activity once items start coming in.</div>
-			{% endfor %}
-		</div> -->
-
-		<div class="settings-summary" id="settings">
-			<p class="eyebrow">Session settings</p>
-			<ul>
-				<li>Notification target: {{ settings.notification }}</li>
-				<li>Scan interval: {{ settings.scan_interval }}</li>
-				<li>Scan time: {{ settings.scan_time }}</li>
-				<li>Theme: {{ settings.theme }}</li>
-			</ul>
-		</div>
-	</aside>
 </section>
 {% endblock %}
