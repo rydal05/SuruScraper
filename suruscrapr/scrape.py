@@ -21,7 +21,8 @@ c_wait = float(config['settings']['waitTime'])
 
 import os
 
-headers = {
+#TODO: potentially implement header generation or at least some variation that doesn't use a static variant
+headers = { 
     "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:152.0) Gecko/20100101 Firefox/152.0",
 	"Accept": "image/avif,image/webp,image/png,image/svg+xml,image/*;q=0.8,*/*;q=0.5",
 	"Accept-Language": "en-US,en;q=0.9",
@@ -30,28 +31,33 @@ headers = {
 	"Connection": "keep-alive",
 }
 
-
-def suru_scrape_task():
+def suru_scrape_task(): #TODO: also need to implement cleaner usage
 	db = get_db()
 
-	print("Starting scrape task",flush=True)
 	items = db.execute("SELECT id, url, name FROM wishlist").fetchall()
+
 	for item_id, url, original_name in items:
 		time.sleep(c_wait)
+
 		try:
-			print("Enumerating scrape task " + url,flush=True)
-			soup = getSoup(url)
-			
-			if not soup: continue
-			
+			soup = getSoup(url) # 1: pull page
+
+			if not soup: continue # 2: check if pull successful
+			# 2.5: branch depending on which site we're on
+
+			# 3: pull item info from page and propagate database TODO: start pulling high level category (I.e, Video software, Music software, Toy hobby (maybe even trim subcategory or do subsorts))
 			name = updateName(original_name, soup,db,item_id)
+
+			# 4: check if item is in stock (split out functions for different sites and whatever)
 			checkIfExists(soup, name,db, item_id)
+
+			# 5: commit new information to database
 			db.commit()
 		except Exception as e:
 			print(f"Error scraping {url}:{e}",flush=True)
 
 
-def updateName(original_name:str, soup:BeautifulSoup, db, item_id):
+def updateName(original_name:str, soup:BeautifulSoup, db, item_id): #TODO: should be made cleaner to read
 	name = original_name
 
 	if original_name == "BLANK":
@@ -64,7 +70,7 @@ def updateName(original_name:str, soup:BeautifulSoup, db, item_id):
 
 	return name
 
-
+#Perfect
 def getSoup(url:str):
 	response = requests.get(url, timeout=10, headers=headers)
 	if response.status_code != 200:
@@ -72,7 +78,7 @@ def getSoup(url:str):
 		return None
 	return BeautifulSoup(response.content, "lxml")
 
-
+#TODO: needs refactoring, should be made more clear
 def checkIfExists(soup:BeautifulSoup,name:str,db,item_id):
 	addToCartBtn = soup.find("button",id='add-cart-btn') 
 	if addToCartBtn:
@@ -85,6 +91,5 @@ def checkIfExists(soup:BeautifulSoup,name:str,db,item_id):
        "UPDATE wishlist SET price = ?, lastSeenDateTime = ? WHERE id = ?",
        (concatPrice, curDate, item_id)
    )
-		#here
 	else:
 		print(name + ": PRODUCT UNAVAILABLE")
