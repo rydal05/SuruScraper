@@ -1,6 +1,7 @@
 /*General site styles*/
 
-html, body{ 
+html,
+body {
     margin: 0;
     padding: 0;
 }
@@ -13,6 +14,7 @@ div {
     background-color: transparent;
 }
 
+
 /*Sticky header specific*/
 
 .headerBar {
@@ -21,7 +23,7 @@ div {
     position: sticky;
     top: 0;
     left: 0;
-    box-shadow: 5px 5px 10px rgba(0,0,0,0.3);
+    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3);
     width: 100%;
     z-index: 1000;
     border-bottom: 10px solid white;
@@ -30,12 +32,12 @@ div {
 .headerContainer {
     display: grid;
     grid-template-areas:
-    "left middle right"
-    ". center ."; 
+        "left middle right"
+        ". center .";
     grid-template-columns: 1fr auto 1fr;
 }
- 
-.headerContainer div.hamburger{
+
+.headerContainer div.hamburger {
     text-align: left;
     grid-area: left;
 }
@@ -46,7 +48,7 @@ div {
 }
 
 .headerContainer div.notifbell {
-    text-align:right;
+    text-align: right;
     grid-area: right;
 }
 
@@ -59,9 +61,9 @@ div {
 
 .auth-container {
     display: grid;
-    grid-template-areas: 
-    ". top ."
-    ". bot ."
+    grid-template-areas:
+        ". top ."
+        ". bot ."
     ;
     grid-template-rows: 2fr 1fr;
     grid-template-columns: 2fr 1fr 2fr;
@@ -75,9 +77,49 @@ div {
     align-self: center;
     grid-area: top;
     border-radius: 10px;
+    width: 100%;
 }
 
-.auth-container button{
+.auth-container button {
     text-align: center;
+}
 
+.flex {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+div.button {
+    margin-top: 20px;
+}
+
+.authtext {
+    display: flex;
+    margin-top: 20px;
+}
+
+footer {
+    position: absolute;
+    width: 100%;
+    bottom: 0;
+
+}
+
+footer div.lgbox,
+footer div.dgbox {
+    width: 100%;
+    position: absolute;
+}
+
+footer div.lgbox {
+    height: 235px;
+    background: #d0d0d0;
+    bottom: 0;
+    border-top: 5px solid red;
+}
+
+footer div.dgbox {
+    height: 104px;
+    background-color: #bdbdbd;
 }
