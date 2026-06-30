@@ -5,15 +5,17 @@
 {% block content %}
 <section class="auth-container">
 	<div class="authbox" style="grid-area: top;">
-		<p>SIGN IN</p>
+		<p class="flex">CREATE AN ACCOUNT</p>
 		<form method="post">
 			<p><label for="username">Username</label></p>
 			<input name="username" id="username" required autocomplete="username">
 
 			<p><label for="password">Password</label></p>
 			<input type="password" name="password" id="password" required autocomplete="new-password">
-
-			<button type="submit">Create Account</button>
+			
+			<div class="flex button">
+				<button type="submit">Create Account</button>
+			</div>
 		</form>
 	</div>
 </section>
