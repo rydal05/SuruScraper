@@ -14,7 +14,7 @@ SuruScraper is a wishlist & databasing service for customers of Suruga-ya and Su
 
 1. Build the Docker container using the pre-configured docker-compose.yml
 2. Initialize the database with `flask --app suruscrapr init-db`
-3. Launch the app with [COMMAND]
+3. Launch the app with `flask -app suruscrapr run --debug`
 
 ## Tools
 * Python 3.14
