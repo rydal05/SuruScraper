@@ -51,11 +51,11 @@ def suru_scrape_task(): #TODO: also need to implement cleaner usage
 				category = intl_category(soup)
 				media_format = intl_format(soup)
 			elif ".jp" in url:
-				name = scrape_name(soup)
-				listed_price = scrape_OG_price(soup)
-				current_price = scrape_price(soup)
-				category = scrape_category(soup)
-				media_format = scrape_format(soup)
+				name = jp_name(soup)
+				listed_price = jp_OG_price(soup)
+				current_price = jp_price(soup)
+				category = jp_category(soup)
+				media_format = jp_format(soup)
 			# 3: pull item info from page and propagate database TODO: start pulling high level category (I.e, Video software, Music software, Toy hobby (maybe even trim subcategory or do subsorts))
 			
 
@@ -151,4 +151,20 @@ def intl_OG_price(soup:BeautifulSoup):
 	# 2. check following div afterwards
 	# 3. trim "JPY" from the field
 	# 4. return int
+	pass
+
+
+def jp_name(soup:BeautifulSoup):
+	pass
+
+def jp_OG_price(soup:BeautifulSoup):
+	pass
+
+def jp_price(soup:BeautifulSoup):
+	pass
+
+def jp_category(soup:BeautifulSoup):
+	pass
+
+def jp_format(soup:BeautifulSoup):
 	pass
