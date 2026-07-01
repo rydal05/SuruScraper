@@ -43,14 +43,21 @@ def suru_scrape_task(): #TODO: also need to implement cleaner usage
 			soup = getSoup(url) # 1: pull page
 
 			if not soup: continue # 2: check if pull successful
-			# 2.5: branch depending on which site we're on
-			
+
+			if ".com" in url:
+				name = intl_name(soup)
+				listed_price = intl_OG_price(soup)
+				current_price = intl_price(soup)
+				category = intl_category(soup)
+				media_format = intl_format(soup)
+			elif ".jp" in url:
+				name = scrape_name(soup)
+				listed_price = scrape_OG_price(soup)
+				current_price = scrape_price(soup)
+				category = scrape_category(soup)
+				media_format = scrape_format(soup)
 			# 3: pull item info from page and propagate database TODO: start pulling high level category (I.e, Video software, Music software, Toy hobby (maybe even trim subcategory or do subsorts))
-			name = scrape_name(soup)
-			listed_price = scrape_OG_price(soup)
-			current_price = scrape_price(soup)
-			category = scrape_category(soup)
-			media_format = scrape_format(soup)
+			
 
 			# 4: check if item is in stock (split out functions for different sites and whatever)
 			checkIfExists(soup, name,db, item_id)
@@ -99,14 +106,14 @@ def checkIfExists(soup:BeautifulSoup,name:str,db,item_id):
 		print(name + ": PRODUCT UNAVAILABLE")
 
 # DONE:
-def scrape_name(soup:BeautifulSoup):
+def intl_name(soup:BeautifulSoup):
 	nametag = soup.find("meta", property="og:title")
 	meta_name = nametag.get("content")
 	
 	return meta_name
 
 # FIXME:
-def scrape_format(soup:BeautifulSoup):
+def intl_format(soup:BeautifulSoup):
 	# 1. Check if media tag is available
 	mediatag = soup.find("span", class_="text-gray-dark text-nowrap") #TODO: needs something more specific to grab at, unreliable
 	next_sib = mediatag.find_next_sibling()
@@ -119,7 +126,7 @@ def scrape_format(soup:BeautifulSoup):
 
 	
 # TESTME:
-def scrape_price(soup:BeautifulSoup):
+def intl_price(soup:BeautifulSoup):
 	addToCartBtn = soup.find("button",id='add-cart-btn') 
 
 	if not addToCartBtn: return None # Item must be in stock to check for price
@@ -129,7 +136,7 @@ def scrape_price(soup:BeautifulSoup):
 
 	pass
 
-def scrape_category(soup:BeautifulSoup):
+def intl_category(soup:BeautifulSoup):
 	category = soup.find("span", class_="text-gray-dark text-nowrap") #TODO: see above
 
 	# skip whitespace
@@ -137,7 +144,7 @@ def scrape_category(soup:BeautifulSoup):
 
 	return None
 
-def scrape_OG_price(soup:BeautifulSoup):
+def intl_OG_price(soup:BeautifulSoup):
 	# 1. check for label with text "Listed Price:"
 	listed_label = soup.find("label", class_="m1-2 price-suggest")
 	if not listed_label: return None # Item must be in stock to check for price
