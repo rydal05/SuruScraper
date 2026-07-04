@@ -71,7 +71,7 @@ def login():
         if error is None:
             session.clear()
             session['user_id'] = user['id']
-            return redirect(url_for('wishlist.index'))
+            return redirect(url_for('wishlist.index')) #TODO: make wishlist page dynamic with tabs to switch between wishlists (I.E. 1 table with header tabs to click between)
 
         flash(error)
 
