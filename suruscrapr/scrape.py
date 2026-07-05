@@ -16,6 +16,8 @@ from suruscrapr.db import get_db, get_all_items
 from headers_generator import generate_headers
 
 import configparser
+
+import json 
 config = configparser.ConfigParser()
 config.read('config.ini')
 
@@ -38,16 +40,7 @@ def suru_scrape_task(): #TODO: also need to implement cleaner usage
 
 			if not soup: continue # 2: check if pull successful
 
-			if ".com" in url:
-				name, msrp, current_price, category, media_format = suru_com_scrape(soup)
-			elif ".jp" in url:
-				name, msrp, current_price, category, media_format = suru_jp_scrape(soup)
-			# 3: pull item info from page and propagate database TODO: start pulling high level category (I.e, Video software, Music software, Toy hobby (maybe even trim subcategory or do subsorts))
-			
-			propagate_db(name, msrp, current_price, category, media_format)
-
-			# 4: check if item is in stock (split out functions for different sites and whatever)
-			checkIfExists(soup, name,db, item_id)
+			name, price, availability, release_date, description, image = suruSchemaScrape(soup)
 
 			# 5: commit new information to database
 			db.commit()
@@ -78,103 +71,33 @@ def getSoup(url:str):
 		return None
 	return BeautifulSoup(response.content, "lxml")
 
-#TODO: needs refactoring, should be made more clear
-def checkIfExists(soup:BeautifulSoup,name:str,db,item_id):
-	addToCartBtn = soup.find("button",id='add-cart-btn') 
-	if addToCartBtn:
-		price_input = soup.find("input", class_="priceValue")
-		price_val = price_input["value"] if price_input else "Unknown" 
-		concatPrice = f"¥{price_val}"
-		print(f"{name}: AVAILABLE @ {price_val}")
-		curDate = datetime.now().strftime("%m/%d/%Y %H:%M")
-		db.execute(
-       "UPDATE wishlist SET price = ?, lastSeenDateTime = ? WHERE id = ?",
-       (concatPrice, curDate, item_id)
-   )
-	else:
-		print(name + ": PRODUCT UNAVAILABLE")
-
-# DONE:
-def intl_name(soup:BeautifulSoup):
-	nametag = soup.find("meta", property="og:title")
-	meta_name = nametag.get("content")
+def suruSchemaScrape(soup:BeautifulSoup): # Compliant with surugaya US and JP site
+	scripts = soup.find_all("script", type="application/ld+json")
 	
-	return meta_name
+	valid_script = None
 
-# FIXME:
-def intl_format(soup:BeautifulSoup):
-	# 1. Check if media tag is available
-	mediatag = soup.find("span", class_="text-gray-dark text-nowrap") #TODO: needs something more specific to grab at, unreliable
-	next_sib = mediatag.find_next_sibling()
+	for script_tag in scripts: # multiple script tags contain json information the one we're looking for has a particular variable assignment that we iterate for
+		try:
+			json_data = script_tag.string
+			parsed_json = json.loads(json_data)
 
-	if next_sib and isinstance(next_sib, str):
-		media_format = next_sib.strip()
-		return media_format
-	
-	return None
+			if "Product" in str(parsed_json.get("brand", {})):
+				valid_script = parsed_json
+				break
+		except json.JSONDecodeError:
+			print("Error decoding json")
 
-	
-# TESTME:
-def intl_price(soup:BeautifulSoup):
-	addToCartBtn = soup.find("button",id='add-cart-btn') 
+	if valid_script == None: return None
 
-	if not addToCartBtn: return None # Item must be in stock to check for price
+	name = parsed_json.get('name')
+	price = parsed_json['offers'].get('price')
+	availability = parsed_json['offers'].get('availability') # outputs as "https://schema.org/OutOfStock" or "https://schema.org/InStock"
 
-	price_input = soup.find("input", class_="priceValue")
-	price_val = price_input["value"]
+	release_date = parsed_json.get('releaseDate') if 'releaseDate' in parsed_json else None
 
-	pass
-
-def intl_category(soup:BeautifulSoup):
-	category = soup.find("span", class_="text-gray-dark text-nowrap") #TODO: see above
-
-	# skip whitespace
-	# check first category tag (Doujin software, Doujin magazine, etc)
-
-	return None
-
-def intl_OG_price(soup:BeautifulSoup):
-	# 1. check for label with text "Listed Price:"
-	listed_label = soup.find("label", class_="m1-2 price-suggest")
-	if not listed_label: return None # Item must be in stock to check for price
-	# 2. check following div afterwards
-	# 3. trim "JPY" from the field
-	# 4. return int
-	pass
+	description = parsed_json.get('description')
+	image = parsed_json.get('image')
 
 
-def jp_name(soup:BeautifulSoup):
-	pass
-
-def jp_OG_price(soup:BeautifulSoup):
-	pass
-
-def jp_price(soup:BeautifulSoup):
-	pass
-
-def jp_category(soup:BeautifulSoup):
-	pass
-
-def jp_format(soup:BeautifulSoup):
-	pass
-
-def suru_com_scrape(soup:BeautifulSoup):
-	name = intl_name(soup)
-	msrp = intl_OG_price(soup)
-	current_price = intl_price(soup)
-	category = intl_category(soup)
-	media_format = intl_format(soup)
-
-	return name, msrp, current_price,category, media_format
-
-def suru_jp_scrape(soup:BeautifulSoup):
-	name = jp_name(soup)
-	msrp = jp_OG_price(soup)
-	current_price = jp_price(soup)
-	category = jp_category(soup)
-	media_format = jp_format(soup)
-
-	return name, msrp, current_price, category, media_format
-
-def propagate_db(name, msrp, current_price, category, media_format):
-	pass
+	return name, price, availability, release_date, description, image
+	# head > script (type = application/ld+json") > name
