@@ -29,8 +29,6 @@ def suru_scrape_task(): #TODO: also need to implement cleaner usage
 
 			name, price, availability, last_seen_date, description, image = suruSchemaScrape(soup)
 			db.update_item(name, price,)
-
-			
 			
 		except Exception as e:
 			print(f"Error scraping {url}:{e}",flush=True)
@@ -56,7 +54,7 @@ def suruSchemaScrape(soup:BeautifulSoup): # Compliant with surugaya US and JP si
 			json_data = script_tag.string
 			parsed_json = json.loads(json_data)
 
-			if "Product" in str(parsed_json.get("brand", {})):
+			if "Product" in str(parsed_json.get("@type", {})):
 				valid_script = parsed_json
 				break
 		except json.JSONDecodeError:
@@ -73,7 +71,6 @@ def suruSchemaScrape(soup:BeautifulSoup): # Compliant with surugaya US and JP si
 		curDate = datetime.now().strftime("%m/%d/%Y %H:%M")
 		last_seen_date = curDate
 	
-
 	release_date = parsed_json.get('releaseDate') if 'releaseDate' in parsed_json else None
 
 	description = parsed_json.get('description') if 'description' in parsed_json else None
