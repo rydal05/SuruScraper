@@ -9,52 +9,27 @@ CREATE TABLE user (
 	password TEXT NOT NULL
 );
 
-CREATE TABLE intl_wishlist (
-	id INTEGER PRIMARY KEY AUTOINCREMENT,
-	url TEXT UNIQUE NOT NULL,
+CREATE TABLE wishlist (
+	id TEXT PRIMARY KEY, -- usa and jp sites can have items with same ID but the information can be different depending on the site
+	url TEXT UNIQUE NOT NULL, --the URL is the true unique identifier
 	name TEXT NOT NULL,
-	price TEXT NOT NULL DEFAULT "N/A",
-	lastSeenDateTime TEXT NOT NULL DEFAULT "N/A",
+	price INTEGER NOT NULL DEFAULT 0,
+	dateLastSeen TEXT NOT NULL DEFAULT "N/A",
+	timeLastSeen TEXT NOT NULL DEFAULT "N/A",
 	cleaned BOOLEAN NOT NULL DEFAULT 0 CHECK (cleaned IN (0, 1))
 	visible BOOLEAN NOT NULL DEFAULT 0 CHECK (visible IN (0, 1))
 );
 
-CREATE TABLE intl_wishlist_item_history {
-	id INTEGER PRIMARY KEY AUTOINCREMENT,
+CREATE TABLE history_wishlist {
+	id TEXT PRIMARY KEY,
 	wishlist_id INTEGER NOT NULL,
 	price TEXT NOT NULL,
 	seen_datetime TEXT NOT NULL,
 	FOREIGN KEY (wishlist_id) REFERENCES wishlist (id)
 }
 
-CREATE TABLE intl_wishlist_item_stats {
-	id INTEGER PRIMARY KEY AUTOINCREMENT,
-	wishlist_id INTEGER NOT NULL,
-	iteration_count INTEGER NOT NULL DEFAULT 0,
-	price_history TEXT NOT NULL DEFAULT "",
-	FOREIGN KEY (wishlist_id) references wishlist (id)
-}
-
-CREATE TABLE jp_wishlist (
-	id INTEGER PRIMARY KEY AUTOINCREMENT,
-	url TEXT UNIQUE NOT NULL,
-	name TEXT NOT NULL,
-	price TEXT NOT NULL DEFAULT "N/A",
-	lastSeenDateTime TEXT NOT NULL DEFAULT "N/A",
-	cleaned BOOLEAN NOT NULL DEFAULT 0 CHECK (cleaned IN (0, 1))
-	visible BOOLEAN NOT NULL DEFAULT 0 CHECK (visible IN (0, 1))
-);
-
-CREATE TABLE jp_wishlist_item_history {
-	id INTEGER PRIMARY KEY AUTOINCREMENT,
-	wishlist_id INTEGER NOT NULL,
-	price TEXT NOT NULL,
-	seen_datetime TEXT NOT NULL,
-	FOREIGN KEY (wishlist_id) REFERENCES wishlist (id)
-}
-
-CREATE TABLE jp_wishlist_item_stats {
-	id INTEGER PRIMARY KEY AUTOINCREMENT,
+CREATE TABLE stats_wishlist {
+	id TEXT PRIMARY KEY,
 	wishlist_id INTEGER NOT NULL,
 	iteration_count INTEGER NOT NULL DEFAULT 0,
 	price_history TEXT NOT NULL DEFAULT "",
