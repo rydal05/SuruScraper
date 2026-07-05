@@ -37,7 +37,7 @@ def has_users():
 def get_all_items():
     try:
         return get_db().execute(
-            'SELECT id, url, name, price, lastSeenDateTime, cleaned '
+            'SELECT id, url, name, price, dateLastSeen, timeLastSeen, cleaned '
             'FROM wishlist ORDER BY id DESC'
         ).fetchall()
     except sqlite3.OperationalError:
@@ -46,11 +46,11 @@ def get_all_items():
 
 def get_item_by_id(item_id: int):
     try:
-        return get_db().execute(
-            'SELECT id, url, name, price, lastSeenDateTime, cleaned '
+        return dict(get_db().execute(
+            'SELECT id, url, name, price, dateLastSeen, timeLastSeen, cleaned '
             'FROM wishlist WHERE id = ?',
-            (item_id,),
-        ).fetchone()
+            (item_id,)
+        ).fetchone())
     except sqlite3.OperationalError:
         return None
 
@@ -58,7 +58,7 @@ def get_item_by_id(item_id: int):
 def insert_wishlist(link: str):
     db = get_db()
     db.execute(
-        'INSERT OR IGNORE INTO wishlist (url, name, price, lastSeenDateTime, cleaned) '
+        'INSERT OR IGNORE INTO wishlist (url, name, price, dateLastSeen, timeLastSeen, cleaned) '
         "VALUES (?, 'BLANK', 0, NULL, NULL, 0)",
         (link,),
     )
@@ -73,32 +73,36 @@ def pop_wishlist():
 def add_item(url, name):
     db = get_db()
     db.execute(
-        'INSERT OR IGNORE INTO wishlist (url, name, price, lastSeenDateTime, cleaned) '
+        'INSERT OR IGNORE INTO wishlist (url, name, price, dateLastSeen, timeLastSeen, cleaned) '
         'VALUES (?, ?, 0, NULL, NULL, 0)',
         (url, name),
     )
     db.commit()
 
 
-def update_item(item_id: int, name=None, price=None, last_seen_date=None, last_seen_time=None, cleaned=None):
+def update_item(item_id: str, url=None, name=None, price=None, dateLastSeen=None, timeLastSeen=None):
     fields = []
     values = []
+
+    if url is not None:
+        fields.append('url = ?')
+        values.append(url)
 
     if name is not None:
         fields.append('name = ?')
         values.append(name)
+
     if price is not None:
         fields.append('price = ?')
         values.append(price)
-    if last_seen_date is not None:
-        fields.append('lastSeenDateTime = ?')
-        values.append(last_seen_date)
-    if last_seen_time is not None:
-        fields.append('lastSeenTime = ?')
-        values.append(last_seen_time)
-    if cleaned is not None:
-        fields.append('cleaned = ?')
-        values.append(1 if cleaned else 0)
+
+    if dateLastSeen is not None:
+        fields.append('dateLastSeen = ?')
+        values.append(dateLastSeen)
+
+    if timeLastSeen is not None:
+        fields.append('timeLastSeen = ?')
+        values.append(timeLastSeen)
 
     if not fields:
         return
@@ -111,26 +115,18 @@ def update_item(item_id: int, name=None, price=None, last_seen_date=None, last_s
     )
     db.commit()
 
+def isCleaned(item_id: str):
+    dbItem = get_item_by_id(item_id)
+
+    if dbItem:
+        return dbItem.get('cleaned')
+    return None
+
 
 def delete_item(item_id: int):
     db = get_db()
     db.execute('DELETE FROM wishlist WHERE id = ?', (item_id,))
     db.commit()
-
-
-def set_item_status(item_id, in_stock, price, last_checked_at):
-    if last_checked_at is None:
-        update_item(item_id, cleaned=not in_stock, price=price)
-        return
-
-    update_item(
-        item_id,
-        cleaned=not in_stock,
-        price=price,
-        last_seen_date=last_checked_at.date().isoformat(),
-        last_seen_time=last_checked_at.strftime('%H:%M'),
-    )
-
 
 sqlite3.register_converter(
     'timestamp', lambda v: datetime.fromisoformat(v.decode())
@@ -164,12 +160,12 @@ def init_db():
 
     cur.execute("""
         CREATE TABLE IF NOT EXISTS wishlist (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id TEXT PRIMARY KEY,
                 url TEXT UNIQUE,
                 name TEXT,
                 price INTEGER,
-                lastSeenDateTime TEXT,
-                lastSeenTime TEXT,
+                dateLastSeen TEXT,
+                timeLastSeen TEXT,
                 cleaned BOOLEAN CHECK (cleaned IN (0,1))
         )
     """)
