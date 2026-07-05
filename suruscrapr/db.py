@@ -9,20 +9,6 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent
 seed_path = BASE_DIR.parent/"data"/"seed.txt"
 
-#TODO: move from manual entry of various prefixes into scraping these as well
-
-prefixes = [
-    "Doujin GAME CD Software",
-    "General dojinshi for men Other games",
-    "General dojinshi for men",
-    "Other Games",
-    "Dojin music CD-software"
-]
-
-def get_prefixes():
-    return prefixes
-
-
 def get_db():
     if 'db' not in g:
         g.db = sqlite3.connect(
