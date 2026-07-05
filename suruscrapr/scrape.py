@@ -1,33 +1,19 @@
-from pathlib import Path
-
-from bs4 import BeautifulSoup
-import requests
-
 import time
 
-import sqlite3
-from datetime import datetime
-
-from flask import current_app, g
-
-from suruscrapr.db import get_prefixes
-from suruscrapr.db import get_db, get_all_items
-
-from headers_generator import generate_headers
-
-import configparser
+import requests
+from bs4 import BeautifulSoup
 
 import json 
-config = configparser.ConfigParser()
-config.read('config.ini')
+import configparser
+from headers_generator import generate_headers
 
-
-import os
-
-#TODO: potentially implement header generation or at least some variation that doesn't use a static variant
+from suruscrapr.db import get_db
 
 def suru_scrape_task(): #TODO: also need to implement cleaner usage
+	config = configparser.ConfigParser()
+	config.read('config.ini')
 	C_WAIT = float(config['settings']['waitTime'])
+
 	db = get_db()
 
 	items = db.execute("SELECT id, url, name FROM wishlist").fetchall()
