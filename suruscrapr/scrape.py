@@ -1,4 +1,5 @@
 import time
+from datetime import datetime
 
 import requests
 from bs4 import BeautifulSoup
@@ -26,7 +27,8 @@ def suru_scrape_task(): #TODO: also need to implement cleaner usage
 
 			if not soup: continue # 2: check if pull successful
 
-			name, price, availability, release_date, description, image = suruSchemaScrape(soup)
+			name, price, availability, last_seen_date, description, image = suruSchemaScrape(soup)
+			db.update_item(name, price,)
 
 			
 			
@@ -65,6 +67,12 @@ def suruSchemaScrape(soup:BeautifulSoup): # Compliant with surugaya US and JP si
 	name = parsed_json.get('name') if 'name' in parsed_json else None
 	price = parsed_json['offers'].get('price') if 'price' in parsed_json else None
 	availability = parsed_json['offers'].get('availability') if 'availability' in parsed_json else None # outputs as "https://schema.org/OutOfStock" or "https://schema.org/InStock"
+	last_seen_date = None
+
+	if availability:
+		curDate = datetime.now().strftime("%m/%d/%Y %H:%M")
+		last_seen_date = curDate
+	
 
 	release_date = parsed_json.get('releaseDate') if 'releaseDate' in parsed_json else None
 
@@ -72,5 +80,5 @@ def suruSchemaScrape(soup:BeautifulSoup): # Compliant with surugaya US and JP si
 	image = parsed_json.get('image') if 'image' in parsed_json else None
 
 
-	return name, price, availability, release_date, description, image
+	return name, price, last_seen_date, release_date, description, image
 	# head > script (type = application/ld+json") > name
