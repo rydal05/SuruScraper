@@ -21,7 +21,7 @@ import json
 config = configparser.ConfigParser()
 config.read('config.ini')
 
-c_wait = float(config['settings']['waitTime'])
+C_WAIT = float(config['settings']['waitTime'])
 
 import os
 
@@ -33,7 +33,7 @@ def suru_scrape_task(): #TODO: also need to implement cleaner usage
 	items = db.execute("SELECT id, url, name FROM wishlist").fetchall()
 
 	for item_id, url, original_name in items:
-		time.sleep(c_wait)
+		time.sleep(C_WAIT)
 
 		try:
 			soup = getSoup(url) # 1: pull page
@@ -42,24 +42,11 @@ def suru_scrape_task(): #TODO: also need to implement cleaner usage
 
 			name, price, availability, release_date, description, image = suruSchemaScrape(soup)
 
-			# 5: commit new information to database
-			db.commit()
+			
+			
 		except Exception as e:
 			print(f"Error scraping {url}:{e}",flush=True)
-
-
-def updateName(original_name:str, soup:BeautifulSoup, db, item_id): #TODO: should be made cleaner to read
-	name = original_name
-
-	if original_name == "BLANK": # TODO: change detecting if the item name was blank to utilizing the clean boolean
-		title_tag = soup.find("h1", class_="title_product") # probably also move checking these outside the function in the first place, or use a function to do table value checks
-		if title_tag:
-			name = title_tag.text.strip()
-		for prefix in get_prefixes():
-			name = name.removeprefix(prefix).strip()
-		db.execute("UPDATE wishlist SET name = ?, cleaned = 1 WHERE id = ?", (name, item_id))
-
-	return name
+			break
 
 # DONE: 
 def getSoup(url:str):
@@ -89,14 +76,14 @@ def suruSchemaScrape(soup:BeautifulSoup): # Compliant with surugaya US and JP si
 
 	if valid_script == None: return None
 
-	name = parsed_json.get('name')
-	price = parsed_json['offers'].get('price')
-	availability = parsed_json['offers'].get('availability') # outputs as "https://schema.org/OutOfStock" or "https://schema.org/InStock"
+	name = parsed_json.get('name') if 'name' in parsed_json else None
+	price = parsed_json['offers'].get('price') if 'price' in parsed_json else None
+	availability = parsed_json['offers'].get('availability') if 'availability' in parsed_json else None # outputs as "https://schema.org/OutOfStock" or "https://schema.org/InStock"
 
 	release_date = parsed_json.get('releaseDate') if 'releaseDate' in parsed_json else None
 
-	description = parsed_json.get('description')
-	image = parsed_json.get('image')
+	description = parsed_json.get('description') if 'description' in parsed_json else None
+	image = parsed_json.get('image') if 'image' in parsed_json else None
 
 
 	return name, price, availability, release_date, description, image
