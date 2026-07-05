@@ -13,6 +13,8 @@ from flask import current_app, g
 from suruscrapr.db import get_prefixes
 from suruscrapr.db import get_db, get_all_items
 
+from headers_generator import generate_headers
+
 import configparser
 config = configparser.ConfigParser()
 config.read('config.ini')
@@ -22,14 +24,6 @@ c_wait = float(config['settings']['waitTime'])
 import os
 
 #TODO: potentially implement header generation or at least some variation that doesn't use a static variant
-headers = { 
-    "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:152.0) Gecko/20100101 Firefox/152.0",
-	"Accept": "image/avif,image/webp,image/png,image/svg+xml,image/*;q=0.8,*/*;q=0.5",
-	"Accept-Language": "en-US,en;q=0.9",
-	"Accept-Encoding": "gzip, deflate, br, zstd",
-	"Sec-GPC": "1",
-	"Connection": "keep-alive",
-}
 
 def suru_scrape_task(): #TODO: also need to implement cleaner usage
 	db = get_db()
@@ -45,19 +39,12 @@ def suru_scrape_task(): #TODO: also need to implement cleaner usage
 			if not soup: continue # 2: check if pull successful
 
 			if ".com" in url:
-				name = intl_name(soup)
-				listed_price = intl_OG_price(soup)
-				current_price = intl_price(soup)
-				category = intl_category(soup)
-				media_format = intl_format(soup)
+				name, msrp, current_price, category, media_format = suru_com_scrape(soup)
 			elif ".jp" in url:
-				name = jp_name(soup)
-				listed_price = jp_OG_price(soup)
-				current_price = jp_price(soup)
-				category = jp_category(soup)
-				media_format = jp_format(soup)
+				name, msrp, current_price, category, media_format = suru_jp_scrape(soup)
 			# 3: pull item info from page and propagate database TODO: start pulling high level category (I.e, Video software, Music software, Toy hobby (maybe even trim subcategory or do subsorts))
 			
+			propagate_db(name, msrp, current_price, category, media_format)
 
 			# 4: check if item is in stock (split out functions for different sites and whatever)
 			checkIfExists(soup, name,db, item_id)
@@ -83,7 +70,9 @@ def updateName(original_name:str, soup:BeautifulSoup, db, item_id): #TODO: shoul
 
 # DONE: 
 def getSoup(url:str):
-	response = requests.get(url, timeout=10, headers=headers)
+	spoof = generate_headers()
+	
+	response = requests.get(url, timeout=10, headers=spoof)
 	if response.status_code != 200:
 		print(f"FAILED TO LOCATE SOUP: {response.status_code}") 
 		return None
@@ -167,4 +156,25 @@ def jp_category(soup:BeautifulSoup):
 	pass
 
 def jp_format(soup:BeautifulSoup):
+	pass
+
+def suru_com_scrape(soup:BeautifulSoup):
+	name = intl_name(soup)
+	msrp = intl_OG_price(soup)
+	current_price = intl_price(soup)
+	category = intl_category(soup)
+	media_format = intl_format(soup)
+
+	return name, msrp, current_price,category, media_format
+
+def suru_jp_scrape(soup:BeautifulSoup):
+	name = jp_name(soup)
+	msrp = jp_OG_price(soup)
+	current_price = jp_price(soup)
+	category = jp_category(soup)
+	media_format = jp_format(soup)
+
+	return name, msrp, current_price, category, media_format
+
+def propagate_db(name, msrp, current_price, category, media_format):
 	pass
