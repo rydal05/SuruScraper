@@ -21,13 +21,13 @@ import json
 config = configparser.ConfigParser()
 config.read('config.ini')
 
-C_WAIT = float(config['settings']['waitTime'])
 
 import os
 
 #TODO: potentially implement header generation or at least some variation that doesn't use a static variant
 
 def suru_scrape_task(): #TODO: also need to implement cleaner usage
+	C_WAIT = float(config['settings']['waitTime'])
 	db = get_db()
 
 	items = db.execute("SELECT id, url, name FROM wishlist").fetchall()
