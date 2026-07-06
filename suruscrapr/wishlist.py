@@ -78,7 +78,6 @@ def settings():
         if action == 'import_seed':
             try:
                 from db import init_db
-
                 init_db()
             except sqlite3.OperationalError:
                 flash('Initialize the database first with `flask --app suruscrapr init-db`.')

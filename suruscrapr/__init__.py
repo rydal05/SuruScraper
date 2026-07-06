@@ -4,7 +4,6 @@ from flask_socketio import SocketIO
 
 def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
-    SocketIO = SocketIO(app)
 
     app.config.from_mapping(
         SECRET_KEY='dev',
