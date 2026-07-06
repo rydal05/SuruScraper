@@ -42,7 +42,7 @@
 							{{ item['price'] }}
 						</td>
 						<td>
-							{{ item['lastSeenDateTime'] }}
+							{{ item['dateLastSeen'] }}
 						</td>
 						<td>
 							<form method="post" action="{{ url_for('wishlist.delete', item_id=item['id']) }}">
