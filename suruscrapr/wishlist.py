@@ -1,3 +1,7 @@
+import logging
+logger = logging.getLogger(__name__)
+logger.info(f'Started in {__name__}')
+
 import sqlite3
 
 from flask import Blueprint, flash, g, redirect, render_template, request, session, url_for

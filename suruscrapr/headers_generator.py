@@ -1,3 +1,7 @@
+import logging
+logger = logging.getLogger(__name__)
+logger.info(f'Started in {__name__}')
+
 import random
 
 def generate_headers():

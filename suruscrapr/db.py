@@ -1,3 +1,7 @@
+import logging
+logger = logging.getLogger(__name__)
+logger.info(f'Started in {__name__}')
+
 import sqlite3
 from datetime import datetime
 
@@ -154,8 +158,8 @@ def init_db():
         seed_db()
         db.commit()
     except sqlite3.Error as e:
-        print(f'Error occurred: {e}')
-        # db.rollback()
+        logging.error(f'Error occurred: {e}')
+        db.rollback()
 
     finally:
         db.close()
@@ -166,20 +170,20 @@ def seed_db():
     pages = []
 
     if not Path(seed_path).exists():
-        print("seed DNE")
+        logging.error("seed DNE")
         return
     
     with open(seed_path, 'r') as file:
         for line in file:
             cleaned_line = line.strip("\n")
             pages.append((cleaned_line,))
-            print(f"Found: {cleaned_line}")
+            logging.info(f"Found: {cleaned_line}")
 
     try:
         cursor.executemany("INSERT OR IGNORE INTO wishlist (url) VALUES (?)", pages)
         db.commit()
     except sqlite3.Error as e:
-        print(f'Error occurred while seeding: {e}')
+        logging.error(f'Error occurred while seeding: {e}')
         # db.rollback()
 
 @click.command('init-db')

@@ -1,3 +1,7 @@
+import logging
+logger = logging.getLogger(__name__)
+logger.info(f'Started in {__name__}')
+
 import time
 from datetime import datetime
 
@@ -10,7 +14,13 @@ import configparser
 from suruscrapr.headers_generator import generate_headers
 from suruscrapr.db import get_db, update_item
 
+running = False
+
 def suru_scrape_task(): #TODO: also need to implement cleaner usage
+	if running: return None
+	running = True
+	# return if database is locked & in use
+
 	config = configparser.ConfigParser()
 	config.read('config.ini')
 	C_WAIT = float(config['settings']['waitTime'])
@@ -27,14 +37,17 @@ def suru_scrape_task(): #TODO: also need to implement cleaner usage
 			if not soup: continue # 2: check if pull successful
 
 			SuruID, name, price, availability, dateLastSeen, description, image = suruSchemaScrape(soup)
-			print(f"Current item stats: {SuruID, name, price, availability, dateLastSeen, description, image}")
-			print(f"We are inserting it into location {id}")
+			
+			logging.info(f"Current item stats: {SuruID, name, price, availability, dateLastSeen, description, image}")
+			logging.info(f"We are inserting it into location {id}")
 			update_item(id, SuruID, name, price, availability, dateLastSeen, description, image)
 			
 		except Exception as e:
-			print(f"Error scraping {url}:{e}",flush=True)
+			running = False
+			logging.error(f"Error scraping {url}:{e}",flush=True)
 			break
 	db.close()
+	running = False
 
 # DONE: 
 def getSoup(url:str):
@@ -42,7 +55,7 @@ def getSoup(url:str):
 	
 	response = requests.get(url, timeout=10, headers=spoof)
 	if response.status_code != 200:
-		print(f"FAILED TO LOCATE SOUP: {response.status_code}") 
+		logging.error(f"FAILED TO LOCATE SOUP: {response.status_code}") 
 		return None
 	return BeautifulSoup(response.content, "lxml")
 
@@ -60,14 +73,14 @@ def suruSchemaScrape(soup:BeautifulSoup): # Compliant with surugaya US and JP si
 				valid_script = parsed_json
 				break
 		except json.JSONDecodeError:
-			print("Error decoding json")
+			logging.error("Error decoding json")
 
-	if valid_script == None: print("RETURNING: INVALID SCRIPT"); return None
+	if valid_script == None: logging.error("RETURNING: INVALID SCRIPT"); return None
 
 	SuruID = parsed_json.get('productID') if 'productID' in parsed_json else None
 	name = parsed_json.get('name') if 'name' in parsed_json else None
 	price = parsed_json['offers']['price'] #offers is nested dict
-	availability = ['offers']['availability'] if 'availability' in parsed_json else None # outputs as "https://schema.org/OutOfStock" or "https://schema.org/InStock"
+	availability = parsed_json['offers']['availability']
 	dateLastSeen = None
 
 	if availability:

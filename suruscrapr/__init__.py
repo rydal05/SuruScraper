@@ -1,6 +1,15 @@
+import logging
+logger = logging.getLogger(__name__)
+logger.info(f'Started in {__name__}')
+
 from pathlib import Path
 from flask import Flask
-from flask_socketio import SocketIO
+
+import threading
+import asyncio
+
+from suruscrapr.scheduler import scrapeScheduler
+from suruscrapr.scrape import suru_scrape_task
 
 def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
