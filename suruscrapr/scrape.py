@@ -6,9 +6,9 @@ from bs4 import BeautifulSoup
 
 import json 
 import configparser
-from headers_generator import generate_headers
 
-from suruscrapr.db import get_db
+from suruscrapr.headers_generator import generate_headers
+from suruscrapr.db import get_db, update_item
 
 def suru_scrape_task(): #TODO: also need to implement cleaner usage
 	config = configparser.ConfigParser()
@@ -17,22 +17,24 @@ def suru_scrape_task(): #TODO: also need to implement cleaner usage
 
 	db = get_db()
 
-	items = db.execute("SELECT id, url, name FROM wishlist").fetchall()
+	items = db.execute("SELECT id, url FROM wishlist").fetchall()
 
-	for item_id, url, original_name in items:
+	for id, url in items:
 		time.sleep(C_WAIT)
-
 		try:
 			soup = getSoup(url) # 1: pull page
 
 			if not soup: continue # 2: check if pull successful
 
-			name, price, availability, last_seen_date, description, image = suruSchemaScrape(soup)
-			db.update_item(name, price,)
+			SuruID, name, price, availability, dateLastSeen, description, image = suruSchemaScrape(soup)
+			print(f"Current item stats: {SuruID, name, price, availability, dateLastSeen, description, image}")
+			print(f"We are inserting it into location {id}")
+			update_item(id, SuruID, name, price, availability, dateLastSeen, description, image)
 			
 		except Exception as e:
 			print(f"Error scraping {url}:{e}",flush=True)
 			break
+	db.close()
 
 # DONE: 
 def getSoup(url:str):
@@ -46,8 +48,8 @@ def getSoup(url:str):
 
 def suruSchemaScrape(soup:BeautifulSoup): # Compliant with surugaya US and JP site
 	scripts = soup.find_all("script", type="application/ld+json")
-	
 	valid_script = None
+	parsed_json = {}
 
 	for script_tag in scripts: # multiple script tags contain json information the one we're looking for has a particular variable assignment that we iterate for
 		try:
@@ -60,16 +62,17 @@ def suruSchemaScrape(soup:BeautifulSoup): # Compliant with surugaya US and JP si
 		except json.JSONDecodeError:
 			print("Error decoding json")
 
-	if valid_script == None: return None
+	if valid_script == None: print("RETURNING: INVALID SCRIPT"); return None
 
+	SuruID = parsed_json.get('productID') if 'productID' in parsed_json else None
 	name = parsed_json.get('name') if 'name' in parsed_json else None
-	price = parsed_json['offers'].get('price') if 'price' in parsed_json else None
-	availability = parsed_json['offers'].get('availability') if 'availability' in parsed_json else None # outputs as "https://schema.org/OutOfStock" or "https://schema.org/InStock"
-	last_seen_date = None
+	price = parsed_json['offers']['price'] #offers is nested dict
+	availability = ['offers']['availability'] if 'availability' in parsed_json else None # outputs as "https://schema.org/OutOfStock" or "https://schema.org/InStock"
+	dateLastSeen = None
 
 	if availability:
 		curDate = datetime.now().strftime("%m/%d/%Y %H:%M")
-		last_seen_date = curDate
+		dateLastSeen = curDate
 	
 	release_date = parsed_json.get('releaseDate') if 'releaseDate' in parsed_json else None
 
@@ -77,5 +80,5 @@ def suruSchemaScrape(soup:BeautifulSoup): # Compliant with surugaya US and JP si
 	image = parsed_json.get('image') if 'image' in parsed_json else None
 
 
-	return name, price, last_seen_date, release_date, description, image
+	return SuruID, name, price, availability, dateLastSeen, description, image
 	# head > script (type = application/ld+json") > name

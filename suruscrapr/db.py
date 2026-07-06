@@ -56,12 +56,12 @@ def get_item_by_id(item_id: int):
         return None
 
 
-def insert_wishlist(link: str):
+def insert_wishlist(url: str):
     db = get_db()
     db.execute(
         'INSERT OR IGNORE INTO wishlist (url, name, price, dateLastSeen, timeLastSeen, cleaned) '
         "VALUES (?, 'BLANK', 0, NULL, NULL, 0)",
-        (link,),
+        (url,),
     )
     db.commit()
     return True
@@ -80,18 +80,13 @@ def add_item(url, name):
     )
     db.commit()
 
-
-def update_item(item_id: str, url=None, name=None, price=None, dateLastSeen=None, timeLastSeen=None):
+def update_item(id: int,SuruID: str, name=None, price=None, availability=None, dateLastSeen=None, description=None,image=None, timeLastSeen=None):
     fields = []
     values = []
 
-    if item_id is not None:
+    if SuruID is not None:
         fields.append('SuruID = ?')
-        values.append(item_id)
-
-    if url is not None:
-        fields.append('url = ?')
-        values.append(url)
+        values.append(SuruID)
 
     if name is not None:
         fields.append('name = ?')
@@ -112,13 +107,18 @@ def update_item(item_id: str, url=None, name=None, price=None, dateLastSeen=None
     if not fields:
         return
 
-    values.append(item_id)
+    values.append(id)
+
     db = get_db()
-    db.execute(
+    cursor = db.cursor()
+
+    cursor.execute(
         f'UPDATE wishlist SET {", ".join(fields)} WHERE id = ?',
         values,
     )
+
     db.commit()
+
 
 def isCleaned(item_id: str):
     dbItem = get_item_by_id(item_id)
@@ -173,6 +173,7 @@ def seed_db():
         for line in file:
             cleaned_line = line.strip("\n")
             pages.append((cleaned_line,))
+            print(f"Found: {cleaned_line}")
 
     try:
         cursor.executemany("INSERT OR IGNORE INTO wishlist (url) VALUES (?)", pages)
