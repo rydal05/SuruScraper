@@ -8,6 +8,7 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent
 seed_path = BASE_DIR.parent/"data"/"seed.txt"
+schema_file = BASE_DIR/"schema.sql"
 
 def get_db():
     if 'db' not in g:
@@ -84,6 +85,10 @@ def update_item(item_id: str, url=None, name=None, price=None, dateLastSeen=None
     fields = []
     values = []
 
+    if item_id is not None:
+        fields.append('SuruID = ?')
+        values.append(item_id)
+
     if url is not None:
         fields.append('url = ?')
         values.append(url)
@@ -135,49 +140,46 @@ sqlite3.register_converter(
 
 def init_db():
     db = get_db()
+    cursor = db.cursor() 
 
-    with current_app.open_resource('schema.sql') as f:
-        db.executescript(f.read().decode('utf8'))
-    
-    surugayaPages = []
+    with open(schema_file, 'r') as f:
+        schema_sql = f.read().strip()
+
+    try:
+        for statement in schema_sql.split(';'):
+            stripped_statement = statement.strip()
+            if stripped_statement:
+                cursor.execute(stripped_statement)
+
+        seed_db()
+        db.commit()
+    except sqlite3.Error as e:
+        print(f'Error occurred: {e}')
+        # db.rollback()
+
+    finally:
+        db.close()
+
+def seed_db():
+    db = get_db()
+    cursor = db.cursor()
+    pages = []
 
     if not Path(seed_path).exists():
-        print("seed doesn't exist") 
+        print("seed DNE")
         return
-
-    with open(seed_path,'r') as file:
+    
+    with open(seed_path, 'r') as file:
         for line in file:
-            line = line.strip("\n")
-            surugayaPages.append((line,))
-            print(line)
-    
-    
+            cleaned_line = line.strip("\n")
+            pages.append((cleaned_line,))
 
-    db.execute('PRAGMA journal_mode=WAL;')
-    db.execute('PRAGMA synchronous=NORMAL;')
-
-    cur = db.cursor()
-
-    cur.execute("""
-        CREATE TABLE IF NOT EXISTS wishlist (
-            id TEXT PRIMARY KEY,
-                url TEXT UNIQUE,
-                name TEXT,
-                price INTEGER,
-                dateLastSeen TEXT,
-                timeLastSeen TEXT,
-                cleaned BOOLEAN CHECK (cleaned IN (0,1))
-        )
-    """)
-
-    cur.execute("SELECT COUNT(*) FROM wishlist")
-    if cur.fetchone()[0] == 0:
-        print("Empty database detected. Seeding...")
-        cur.executemany(
-            "INSERT OR IGNORE INTO wishlist (url, name, price, cleaned) VALUES (?,'BLANK',0,0)", surugayaPages 
-        )
+    try:
+        cursor.executemany("INSERT OR IGNORE INTO wishlist (url) VALUES (?)", pages)
         db.commit()
-
+    except sqlite3.Error as e:
+        print(f'Error occurred while seeding: {e}')
+        # db.rollback()
 
 @click.command('init-db')
 def init_db_command():
