@@ -1,3 +1,5 @@
+
+import sqlite3
 import logging
 logger = logging.getLogger(__name__)
 logger.info(f'Started in {__name__}')
@@ -16,7 +18,7 @@ from suruscrapr.db import get_db, update_item
 
 running = False
 
-def suru_scrape_task(): #TODO: also need to implement cleaner usage
+def suru_scrape_task(db): #TODO: also need to implement cleaner usage
 	if running: return None
 	running = True
 	# return if database is locked & in use
@@ -24,8 +26,6 @@ def suru_scrape_task(): #TODO: also need to implement cleaner usage
 	config = configparser.ConfigParser()
 	config.read('config.ini')
 	C_WAIT = float(config['settings']['waitTime'])
-
-	db = get_db()
 
 	items = db.execute("SELECT id, url FROM wishlist").fetchall()
 
