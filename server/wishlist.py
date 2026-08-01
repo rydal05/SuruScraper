@@ -6,8 +6,8 @@ import sqlite3
 
 from flask import Blueprint, flash, g, redirect, render_template, request, session, url_for
 
-from suruscrapr.auth import login_required
-from suruscrapr.db import get_all_items, get_db
+from server.auth import login_required
+from server.db import get_all_items, get_db
 
 bp = Blueprint('wishlist', __name__)
 
@@ -60,7 +60,7 @@ def create():
 @login_required
 def scrape_now():
     try:
-        from suruscrapr.scrape import suru_scrape_task
+        from server.scrape import suru_scrape_task
 
         suru_scrape_task()
     except sqlite3.OperationalError:

@@ -3,14 +3,14 @@ import logging
 try:
     from . import create_app
 except ImportError:
-    from suruscrapr import create_app
+    from server import create_app
 
 import threading
 import asyncio
 
-from suruscrapr.scheduler import scrapeScheduler
-from suruscrapr.scrape import suru_scrape_task
-from suruscrapr.logger import configure_logging
+from server.scheduler import scrapeScheduler
+from server.scrape import suru_scrape_task
+from server.logger import configure_logging
 
 app = create_app()
 

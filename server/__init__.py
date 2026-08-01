@@ -8,8 +8,8 @@ from flask import Flask
 import threading
 import asyncio
 
-from suruscrapr.scheduler import scrapeScheduler
-from suruscrapr.scrape import suru_scrape_task
+from server.scheduler import scrapeScheduler
+from server.scrape import suru_scrape_task
 
 def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)

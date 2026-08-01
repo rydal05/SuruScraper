@@ -13,8 +13,8 @@ from bs4 import BeautifulSoup
 import json 
 import configparser
 
-from suruscrapr.headers_generator import generate_headers
-from suruscrapr.db import get_db, update_item
+from server.headers_generator import generate_headers
+from server.db import get_db, update_item
 
 running = False
 

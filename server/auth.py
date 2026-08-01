@@ -7,7 +7,7 @@ from flask import (
 )
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from suruscrapr.db import get_db, has_users
+from server.db import get_db, has_users
 
 bp = Blueprint('auth', __name__, url_prefix='/auth')
 
