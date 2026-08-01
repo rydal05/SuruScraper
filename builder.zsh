@@ -1,3 +1,3 @@
 #!/bin/zsh
-flask -app suruscrapr init-db
+flask -app server init-db
 docker-compose up --build -d

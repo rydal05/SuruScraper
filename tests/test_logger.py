@@ -5,7 +5,7 @@ def configure_logging():
     logger = logging.getLogger(__name__)
     logger.setLevel(logging.INFO)
 
-    file_handler = logging.FileHandler('suruscraper.log')
+    file_handler = logging.FileHandler('server.log')
     file_handler.setLevel(logging.INFO)
 
     console_handler = logging.StreamHandler()

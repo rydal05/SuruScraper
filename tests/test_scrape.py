@@ -1,7 +1,7 @@
 import sys
 sys.path.append("..")
 
-import suruscrapr.scrape
+import server.scrape
 
 US_InStock = 'https://www.suruga-ya.com/en/product/2K2618'
 US_OutOfStock = 'https://www.suruga-ya.com/en/product/ZHORE50831'
