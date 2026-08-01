@@ -9,4 +9,4 @@ JP_InStock = 'https://www.suruga-ya.jp/product/detail/186014330?tenpo_cd=400388'
 JP_OutOfStock = 'https://www.suruga-ya.jp/product/detail/ZHORE9659?tenpo_cd='
 
 def single_instance_scrape():
-    
+    pass
