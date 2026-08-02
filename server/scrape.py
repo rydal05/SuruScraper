@@ -16,19 +16,12 @@ import configparser
 from server.headers_generator import generate_headers
 from server.db import get_db, update_item
 
-running = False
-
 def suru_scrape_task(db): #TODO: also need to implement cleaner usage
-	if running: return None
-	running = True
-	# return if database is locked & in use
-
 	config = configparser.ConfigParser()
 	config.read('config.ini')
 	C_WAIT = float(config['settings']['waitTime'])
 
 	items = db.execute("SELECT id, url FROM wishlist").fetchall()
-
 	for id, url in items:
 		time.sleep(C_WAIT)
 		try:
@@ -37,17 +30,15 @@ def suru_scrape_task(db): #TODO: also need to implement cleaner usage
 			if not soup: continue # 2: check if pull successful
 
 			SuruID, name, price, availability, dateLastSeen, description, image = suruSchemaScrape(soup)
-			
 			logging.info(f"Current item stats: {SuruID, name, price, availability, dateLastSeen, description, image}")
 			logging.info(f"We are inserting it into location {id}")
 			update_item(id, SuruID, name, price, availability, dateLastSeen, description, image)
 			
 		except Exception as e:
-			running = False
 			logging.error(f"Error scraping {url}:{e}",flush=True)
 			break
 	db.close()
-	running = False
+
 
 # DONE: 
 def getSoup(url:str):
@@ -74,6 +65,7 @@ def suruSchemaScrape(soup:BeautifulSoup): # Compliant with surugaya US and JP si
 				break
 		except json.JSONDecodeError:
 			logging.error("Error decoding json")
+			pass
 
 	if valid_script == None: logging.error("RETURNING: INVALID SCRIPT"); return None
 
@@ -94,4 +86,3 @@ def suruSchemaScrape(soup:BeautifulSoup): # Compliant with surugaya US and JP si
 
 
 	return SuruID, name, price, availability, dateLastSeen, description, image
-	# head > script (type = application/ld+json") > name
