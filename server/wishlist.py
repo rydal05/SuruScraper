@@ -55,8 +55,8 @@ def create():
 def scrape_now():
     try:
         from server.scrape import suru_scrape_task
-
-        suru_scrape_task()
+        
+        suru_scrape_task(get_db())
     except sqlite3.OperationalError:
         flash('Initialize the database first with `flask --app suruscrapr init-db`.')
     except Exception as exc:
