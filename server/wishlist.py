@@ -6,7 +6,6 @@ import sqlite3
 
 from flask import Blueprint, flash, g, redirect, render_template, request, session, url_for
 
-from server.auth import login_required
 from server.db import get_all_items, get_db
 
 bp = Blueprint('wishlist', __name__)
@@ -21,16 +20,12 @@ DEFAULT_SETTINGS = {
 
 @bp.route('/')
 def index():
-    if g.user is None:
-        return redirect(url_for('auth.login' if g.account_exists else 'auth.register'))
-
     items = get_all_items()
     settings = {**DEFAULT_SETTINGS, **session.get('dashboard_settings', {})}
     return render_template('wishlist/index.html', items=items, settings=settings)
 
 
 @bp.route('/create', methods=('GET', 'POST'))
-@login_required
 def create():
     if request.method == 'POST':
         url = request.form['url'].strip()
@@ -57,7 +52,6 @@ def create():
 
 
 @bp.route('/scrape-now', methods=('POST',))
-@login_required
 def scrape_now():
     try:
         from server.scrape import suru_scrape_task
@@ -74,7 +68,6 @@ def scrape_now():
 
 
 @bp.route('/settings', methods=('GET', 'POST'))
-@login_required
 def settings():
     if request.method == 'POST':
         action = request.form.get('action', 'save')
@@ -103,7 +96,6 @@ def settings():
 
 
 @bp.route('/<int:item_id>/delete', methods=('POST',))
-@login_required
 def delete(item_id):
     db = get_db()
     db.execute('DELETE FROM wishlist WHERE id = ?', (item_id,))

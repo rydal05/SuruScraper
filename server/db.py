@@ -32,13 +32,6 @@ def close_db(e=None):
         db.close()
 
 
-def has_users():
-    try:
-        return get_db().execute('SELECT 1 FROM user LIMIT 1').fetchone() is not None
-    except sqlite3.OperationalError:
-        return False
-
-
 def get_all_items():
     try:
         return get_db().execute(
