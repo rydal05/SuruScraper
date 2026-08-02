@@ -7,7 +7,7 @@ import tests.test_logger as TL
 ROOT_PATH = Path(__file__).resolve().parent.parent
 seed_folder = ROOT_PATH/"data"/"tests"/"test_seeds/"
 database_folder = ROOT_PATH/"data"/"tests"/"test_dbs/"
-schema_file = ROOT_PATH/"suruscrapr"/"schema.sql"
+schema_file = ROOT_PATH/"server"/"schema.sql"
 
 def TEST():
     TL.configure_logging()
