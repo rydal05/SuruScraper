@@ -5,9 +5,6 @@ try:
 except ImportError:
     from server import create_app
 
-import threading
-import asyncio
-
 from server.scheduler import scrapeScheduler
 from server.scrape import suru_scrape_task
 from server.logger import configure_logging
